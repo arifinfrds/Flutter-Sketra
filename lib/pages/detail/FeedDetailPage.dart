@@ -52,7 +52,7 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(viewModel.wallpaper?.title ?? "Detail page"),
+        title: Text(viewModel.pageTitle()),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: _body(viewModel),

@@ -10,9 +10,12 @@ class FeedDetailViewModel extends ChangeNotifier {
   final MockWallpaperRepository _repository;
 
   Wallpaper? _wallpaper;
+
   Wallpaper? get wallpaper => _wallpaper;
 
-  FeedDetailViewModelViewState _viewState = FeedDetailViewModelViewState.initial;
+  FeedDetailViewModelViewState _viewState =
+      FeedDetailViewModelViewState.initial;
+
   FeedDetailViewModelViewState get viewState => _viewState;
 
   FeedDetailViewModel(this._wallpaperId, this._repository);
@@ -28,5 +31,9 @@ class FeedDetailViewModel extends ChangeNotifier {
       _viewState = FeedDetailViewModelViewState.error;
     }
     notifyListeners();
+  }
+
+  String pageTitle() {
+    return wallpaper?.title ?? 'Detail page';
   }
 }
