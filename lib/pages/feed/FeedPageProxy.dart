@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sketra/pages/detail/FeedDetailPage.dart';
+import 'package:sketra/pages/feed/FeedPageGridCell.dart';
 
 import 'FeedViewModel.dart';
 import '../../models/Wallpaper.dart';
@@ -98,31 +100,15 @@ class _FeedPageState extends State<FeedPage> {
       itemCount: wallpapers.length,
       itemBuilder: (context, index) {
         final wallpaper = wallpapers[index];
-        return _gridCell(wallpaper);
+        return FeedPageGridCell(
+          wallpaper: wallpaper,
+          onTap: () => {
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (context) => FeedDetailPage())),
+          },
+        );
       },
-    );
-  }
-
-  Widget _gridCell(Wallpaper wallpaper) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: Image.network(
-        wallpaper.url,
-        fit: BoxFit.cover,
-        loadingBuilder: (context, child, event) {
-          if (event == null) {
-            return child;
-          } else {
-            return Center(
-              child: CircularProgressIndicator(
-                value: event.expectedTotalBytes != null
-                    ? event.cumulativeBytesLoaded / event.expectedTotalBytes!
-                    : null,
-              ),
-            );
-          }
-        },
-      ),
     );
   }
 }
