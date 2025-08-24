@@ -47,9 +47,12 @@ class FeedDetailPage extends StatefulWidget {
 }
 
 class _FeedDetailPageState extends State<FeedDetailPage> {
+  late final FeedDetailViewModel _viewModel;
+
   @override
   Widget build(BuildContext context) {
     final viewModel = Provider.of<FeedDetailViewModel>(context);
+    this._viewModel = viewModel;
 
     return Scaffold(
       appBar: AppBar(
@@ -63,17 +66,25 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
   Widget _body(FeedDetailViewModel viewModel) {
     switch (viewModel.viewState) {
       case FeedDetailViewModelViewState.initial:
-        return Center(child: CircularProgressIndicator());
+        return _loadingView();
       case FeedDetailViewModelViewState.loading:
-        return Center(child: CircularProgressIndicator());
+        return _loadingView();
       case FeedDetailViewModelViewState.loaded:
         return AsyncImage(url: viewModel.wallpaper!.url);
       case FeedDetailViewModelViewState.error:
-        return ContentUnavailableView.name(
-          title: "Failed to load wallpaper",
-          description: viewModel.errorMessage,
-          onRetry: () => {viewModel.onLoad()},
-        );
+        return _errorView();
     }
+  }
+
+  Widget _loadingView() {
+    return Center(child: CircularProgressIndicator());
+  }
+
+  Widget _errorView() {
+    return ContentUnavailableView.name(
+      title: "Failed to load wallpaper",
+      description: _viewModel.errorMessage,
+      onRetry: () => {_viewModel.onLoad()},
+    );
   }
 }
