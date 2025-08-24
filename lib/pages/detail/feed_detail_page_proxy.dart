@@ -6,7 +6,7 @@ import 'package:sketra/pages/detail/feed_detail_view_model.dart';
 
 import '../shared/async_image.dart';
 import '../shared/content_unavailable_view.dart';
-import '../shared/download_wallpaper_alert_dialog.dart';
+import '../shared/confirmation_alert_dialog.dart';
 
 class FeedDetailPageProxy extends StatelessWidget {
   final String wallpaperId;
@@ -95,9 +95,13 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
       onPressed: () {
         showDialog(
           context: context,
-          builder: (context) => DownloadWallpaperAlertDialog(
-            wallpaperTitle: _viewModel.pageTitle(),
+          builder: (context) => ConfirmationAlertDialog(
+            title: "Download wallpaper",
+            description:
+                "Are you sure you want to download ${_viewModel.pageTitle()} image?",
             onPrimaryAction: () {},
+            primaryActionTitle: 'Yes',
+            cancelActionTitle: 'Cancel',
           ),
         );
       },
