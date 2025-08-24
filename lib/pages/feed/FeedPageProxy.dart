@@ -103,9 +103,11 @@ class _FeedPageState extends State<FeedPage> {
         return FeedPageGridCell(
           wallpaper: wallpaper,
           onTap: () => {
-            Navigator.of(
-              context,
-            ).push(MaterialPageRoute(builder: (context) => FeedDetailPage())),
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => FeedDetailPageProxy(wallpaper.id),
+              ),
+            ),
           },
         );
       },
