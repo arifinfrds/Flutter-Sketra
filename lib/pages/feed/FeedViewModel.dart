@@ -21,8 +21,10 @@ class FeedViewModel extends ChangeNotifier {
     try {
       await Future.delayed(const Duration(seconds: 2));
       final jsonString = await rootBundle.loadString('assets/mock_feed.json');
-      MockWallpaperRepository repository = MockWallpaperRepository();
-      WallpaperResponse response = await repository.loadWallpapers(jsonString);
+      MockWallpaperRepository repository = MockWallpaperRepository.name(
+        jsonString,
+      );
+      WallpaperResponse response = await repository.loadWallpapers();
 
       wallpapers = response.wallpapers;
       viewState = wallpapers.isEmpty

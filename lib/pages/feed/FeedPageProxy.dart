@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'FeedViewModel.dart';
-import 'models/Wallpaper.dart';
+import '../../models/Wallpaper.dart';
 
 class FeedPageProxy extends StatelessWidget {
   const FeedPageProxy({super.key, required this.title});
@@ -64,7 +64,6 @@ class _FeedPageState extends State<FeedPage> {
         return const Center(child: CircularProgressIndicator());
       case FeedViewState.error:
         return Center(
-          // can you make this really centered vertically?
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             spacing: 16,

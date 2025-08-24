@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'FeedPageProxy.dart';
+import 'pages/feed/FeedPageProxy.dart';
 
 void main() {
   runApp(const MyApp());
