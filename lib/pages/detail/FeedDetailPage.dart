@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:sketra/models/MockWallpaperRepository.dart';
 import 'package:sketra/pages/detail/FeedDetailViewModel.dart';
 
+import '../shared/AsyncImage.dart';
+
 class FeedDetailPageProxy extends StatelessWidget {
   final String wallpaperId;
 
@@ -46,16 +48,21 @@ class FeedDetailPage extends StatefulWidget {
 class _FeedDetailPageState extends State<FeedDetailPage> {
   @override
   Widget build(BuildContext context) {
+    final viewModel = Provider.of<FeedDetailViewModel>(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("Detail page"),
+        title: Text(viewModel.wallpaper?.title ?? "Detail page"),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-      body: _body(),
+      body: _body(viewModel),
     );
   }
 
-  Widget _body() {
-    return Center(child: Text("The image"));
+  Widget _body(FeedDetailViewModel viewModel) {
+    if (viewModel.wallpaper == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    return AsyncImage(url: viewModel.wallpaper!.url);
   }
 }

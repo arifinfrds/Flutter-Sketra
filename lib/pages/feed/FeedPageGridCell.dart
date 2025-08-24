@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sketra/models/Wallpaper.dart';
 
+import '../shared/AsyncImage.dart';
+
 class FeedPageGridCell extends StatelessWidget {
   final Wallpaper wallpaper;
   final VoidCallback onTap;
@@ -20,24 +22,7 @@ class FeedPageGridCell extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(12),
-          child: Image.network(
-            wallpaper.url,
-            fit: BoxFit.cover,
-            loadingBuilder: (context, child, event) {
-              if (event == null) {
-                return child;
-              } else {
-                return Center(
-                  child: CircularProgressIndicator(
-                    value: event.expectedTotalBytes != null
-                        ? event.cumulativeBytesLoaded /
-                              event.expectedTotalBytes!
-                        : null,
-                  ),
-                );
-              }
-            },
-          ),
+          child: AsyncImage(url: wallpaper.url),
         ),
       ),
     );
