@@ -6,6 +6,7 @@ import 'package:sketra/pages/detail/feed_detail_view_model.dart';
 
 import '../shared/async_image.dart';
 import '../shared/content_unavailable_view.dart';
+import '../shared/download_wallpaper_alert_dialog.dart';
 
 class FeedDetailPageProxy extends StatelessWidget {
   final String wallpaperId;
@@ -60,6 +61,7 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: _body(viewModel),
+      floatingActionButton: _downloadWallpaperFAB(),
     );
   }
 
@@ -85,6 +87,21 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
       title: "Failed to load wallpaper",
       description: _viewModel.errorMessage,
       onRetry: () => {_viewModel.onLoad()},
+    );
+  }
+
+  Widget _downloadWallpaperFAB() {
+    return FloatingActionButton(
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (context) => DownloadWallpaperAlertDialog(
+            wallpaperTitle: _viewModel.pageTitle(),
+            onPrimaryAction: () {},
+          ),
+        );
+      },
+      child: const Icon(Icons.arrow_circle_down_rounded),
     );
   }
 }
