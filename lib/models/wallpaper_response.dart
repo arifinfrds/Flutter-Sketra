@@ -1,4 +1,4 @@
-import 'Wallpaper.dart';
+import 'wallpaper.dart';
 
 class WallpaperResponse {
   final List<Wallpaper> wallpapers;

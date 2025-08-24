@@ -1,6 +1,6 @@
-import 'package:sketra/models/Wallpaper.dart';
+import 'package:sketra/models/wallpaper.dart';
 
-import 'WallpaperResponse.dart';
+import 'wallpaper_response.dart';
 import 'dart:convert';
 
 class MockWallpaperRepository {

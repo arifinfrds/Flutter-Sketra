@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:sketra/models/MockWallpaperRepository.dart';
-import 'package:sketra/models/Wallpaper.dart';
-import 'package:sketra/models/WallpaperResponse.dart';
+import 'package:sketra/models/mock_wallpaper_repository.dart';
+import 'package:sketra/models/wallpaper.dart';
+import 'package:sketra/models/wallpaper_response.dart';
 
 enum FeedViewState { initial, loading, empty, loaded, error }
 

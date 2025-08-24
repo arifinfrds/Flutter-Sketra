@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:sketra/models/MockWallpaperRepository.dart';
-import 'package:sketra/pages/detail/FeedDetailViewModel.dart';
+import 'package:sketra/models/mock_wallpaper_repository.dart';
+import 'package:sketra/pages/detail/feed_detail_view_model.dart';
 
-import '../shared/AsyncImage.dart';
+import '../shared/async_image.dart';
 import '../shared/content_unavailable_view.dart';
 
 class FeedDetailPageProxy extends StatelessWidget {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:sketra/models/Wallpaper.dart';
+import 'package:sketra/models/wallpaper.dart';
 
-import '../shared/AsyncImage.dart';
+import '../shared/async_image.dart';
 
 class FeedPageGridCell extends StatelessWidget {
   final Wallpaper wallpaper;

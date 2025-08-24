@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:sketra/models/Wallpaper.dart';
+import 'package:sketra/models/wallpaper.dart';
 
-import '../../models/MockWallpaperRepository.dart';
+import '../../models/mock_wallpaper_repository.dart';
 
 enum FeedDetailViewModelViewState { initial, loading, loaded, error }
 

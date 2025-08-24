@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sketra/pages/detail/FeedDetailPage.dart';
-import 'package:sketra/pages/feed/FeedPageGridCell.dart';
+import 'package:sketra/pages/detail/feed_detail_page_proxy.dart';
+import 'package:sketra/pages/feed/feed_page_grid_cell.dart';
 
 import '../shared/content_unavailable_view.dart';
-import 'FeedViewModel.dart';
-import '../../models/Wallpaper.dart';
+import 'feed_view_model.dart';
+import '../../models/wallpaper.dart';
 
 class FeedPageProxy extends StatelessWidget {
   const FeedPageProxy({super.key, required this.title});
