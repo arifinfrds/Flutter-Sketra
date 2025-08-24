@@ -5,6 +5,7 @@ import 'package:sketra/models/MockWallpaperRepository.dart';
 import 'package:sketra/pages/detail/FeedDetailViewModel.dart';
 
 import '../shared/AsyncImage.dart';
+import '../shared/content_unavailable_view.dart';
 
 class FeedDetailPageProxy extends StatelessWidget {
   final String wallpaperId;
@@ -60,9 +61,19 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
   }
 
   Widget _body(FeedDetailViewModel viewModel) {
-    if (viewModel.wallpaper == null) {
-      return const Center(child: CircularProgressIndicator());
+    switch (viewModel.viewState) {
+      case FeedDetailViewModelViewState.initial:
+        return Center(child: CircularProgressIndicator());
+      case FeedDetailViewModelViewState.loading:
+        return Center(child: CircularProgressIndicator());
+      case FeedDetailViewModelViewState.loaded:
+        return AsyncImage(url: viewModel.wallpaper!.url);
+      case FeedDetailViewModelViewState.error:
+        return ContentUnavailableView.name(
+          title: "Failed to load wallpaper",
+          description: viewModel.errorMessage,
+          onRetry: () => {viewModel.onLoad()},
+        );
     }
-    return AsyncImage(url: viewModel.wallpaper!.url);
   }
 }

@@ -10,13 +10,16 @@ class FeedDetailViewModel extends ChangeNotifier {
   final MockWallpaperRepository _repository;
 
   Wallpaper? _wallpaper;
-
-  Wallpaper? get wallpaper => _wallpaper;
-
   FeedDetailViewModelViewState _viewState =
       FeedDetailViewModelViewState.initial;
 
+  Wallpaper? get wallpaper => _wallpaper;
+
   FeedDetailViewModelViewState get viewState => _viewState;
+
+  String _errorMessage = "";
+
+  String get errorMessage => _errorMessage;
 
   FeedDetailViewModel(this._wallpaperId, this._repository);
 
@@ -27,7 +30,8 @@ class FeedDetailViewModel extends ChangeNotifier {
     try {
       _wallpaper = await _repository.loadWallpaper(_wallpaperId);
       _viewState = FeedDetailViewModelViewState.loaded;
-    } catch (e) {
+    } catch (exception) {
+      _errorMessage = exception.toString();
       _viewState = FeedDetailViewModelViewState.error;
     }
     notifyListeners();

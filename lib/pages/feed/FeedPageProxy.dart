@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:sketra/pages/detail/FeedDetailPage.dart';
 import 'package:sketra/pages/feed/FeedPageGridCell.dart';
 
+import '../shared/content_unavailable_view.dart';
 import 'FeedViewModel.dart';
 import '../../models/Wallpaper.dart';
 
@@ -65,19 +66,10 @@ class _FeedPageState extends State<FeedPage> {
       case FeedViewState.loading:
         return const Center(child: CircularProgressIndicator());
       case FeedViewState.error:
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            spacing: 16,
-            children: [
-              const Text("Failed to load wallpapers"),
-              Text("${viewModel.errorMessage}"),
-              ElevatedButton(
-                onPressed: () => {viewModel.onLoad()},
-                child: const Text("Reload"),
-              ),
-            ],
-          ),
+        return ContentUnavailableView.name(
+          title: "Failed to load wallpapers",
+          description: viewModel.errorMessage,
+          onRetry: () => {viewModel.onLoad()},
         );
       case FeedViewState.empty:
         return const Center(child: Text("No wallpapers available"));
