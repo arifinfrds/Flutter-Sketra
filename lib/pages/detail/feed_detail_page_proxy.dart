@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:sketra/models/mock_wallpaper_repository.dart';
+import 'package:sketra/models/mock_wallpaper_service.dart';
 import 'package:sketra/pages/detail/feed_detail_view_model.dart';
 
 import '../shared/async_image.dart';
@@ -17,7 +17,7 @@ class FeedDetailPageProxy extends StatelessWidget {
     final jsonString = await rootBundle.loadString('assets/mock_feed.json');
     final viewModel = FeedDetailViewModel(
       wallpaperId,
-      MockWallpaperRepository.name(jsonString),
+      MockWallpaperService.name(jsonString),
     );
     await viewModel.onLoad();
     return viewModel;

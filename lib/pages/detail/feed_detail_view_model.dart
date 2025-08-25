@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:sketra/models/wallpaper.dart';
 
-import '../../models/mock_wallpaper_repository.dart';
+import '../../models/mock_wallpaper_service.dart';
 
 enum FeedDetailViewModelViewState { initial, loading, loaded, error }
 
 class FeedDetailViewModel extends ChangeNotifier {
   final String _wallpaperId;
-  final MockWallpaperRepository _repository;
+  final MockWallpaperService _repository;
 
   Wallpaper? _wallpaper;
   FeedDetailViewModelViewState _viewState =

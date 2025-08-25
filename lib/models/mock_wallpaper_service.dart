@@ -3,10 +3,10 @@ import 'package:sketra/models/wallpaper.dart';
 import 'wallpaper_response.dart';
 import 'dart:convert';
 
-class MockWallpaperRepository {
+class MockWallpaperService {
   String jsonString;
 
-  MockWallpaperRepository.name(this.jsonString);
+  MockWallpaperService.name(this.jsonString);
 
   Future<WallpaperResponse> loadWallpapers() async {
     final decoded = jsonDecode(jsonString) as Map<String, dynamic>;

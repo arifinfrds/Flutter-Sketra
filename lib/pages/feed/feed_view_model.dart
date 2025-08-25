@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:sketra/models/mock_wallpaper_repository.dart';
+import 'package:sketra/models/mock_wallpaper_service.dart';
 import 'package:sketra/models/wallpaper.dart';
 import 'package:sketra/models/wallpaper_response.dart';
 
@@ -21,7 +21,7 @@ class FeedViewModel extends ChangeNotifier {
     try {
       await Future.delayed(const Duration(seconds: 2));
       final jsonString = await rootBundle.loadString('assets/mock_feed.json');
-      MockWallpaperRepository repository = MockWallpaperRepository.name(
+      MockWallpaperService repository = MockWallpaperService.name(
         jsonString,
       );
       WallpaperResponse response = await repository.loadWallpapers();
