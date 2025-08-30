@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:sketra/models/download_wallpaper_service.dart';
 import 'package:sketra/models/mock_wallpaper_service.dart';
 import 'package:sketra/pages/detail/feed_detail_view_model.dart';
 
@@ -18,6 +20,7 @@ class FeedDetailPageProxy extends StatelessWidget {
     final viewModel = FeedDetailViewModel(
       wallpaperId,
       MockWallpaperService.name(jsonString),
+      DownloadWallpaperService(),
     );
     await viewModel.onLoad();
     return viewModel;
@@ -53,7 +56,7 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
   @override
   Widget build(BuildContext context) {
     final viewModel = Provider.of<FeedDetailViewModel>(context);
-    this._viewModel = viewModel;
+    _viewModel = viewModel;
 
     return Scaffold(
       appBar: AppBar(
@@ -66,6 +69,8 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
   }
 
   Widget _body(FeedDetailViewModel viewModel) {
+    _bindToast(viewModel);
+
     switch (viewModel.viewState) {
       case FeedDetailViewModelViewState.initial:
         return _loadingView();
@@ -75,6 +80,33 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
         return AsyncImage(url: viewModel.wallpaper!.url);
       case FeedDetailViewModelViewState.error:
         return _errorView();
+      case FeedDetailViewModelViewState.imageDownloadedToDevice:
+        return AsyncImage(url: viewModel.wallpaper!.url);
+      case FeedDetailViewModelViewState.imageDownloadedToDeviceError:
+        return AsyncImage(url: viewModel.wallpaper!.url);
+    }
+  }
+
+  void _bindToast(FeedDetailViewModel viewModel) {
+    if (viewModel.viewState ==
+            FeedDetailViewModelViewState.imageDownloadedToDevice ||
+        viewModel.viewState ==
+            FeedDetailViewModelViewState.imageDownloadedToDeviceError) {
+      final message =
+          viewModel.viewState ==
+              FeedDetailViewModelViewState.imageDownloadedToDevice
+          ? "Image has been downloaded to your device gallery app"
+          : "Could not download the image to your device gallery. Please check your permission in system settings, or try again later.";
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Fluttertoast.showToast(
+          msg: message,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+        );
+        viewModel.resetDownloadState();
+      });
     }
   }
 
@@ -99,7 +131,9 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
             title: "Download wallpaper",
             description:
                 "Are you sure you want to download ${_viewModel.pageTitle()} image?",
-            onPrimaryAction: () {},
+            onPrimaryAction: () {
+              _viewModel.onDownloadWallpaper();
+            },
             primaryActionTitle: 'Yes',
             cancelActionTitle: 'Cancel',
           ),
