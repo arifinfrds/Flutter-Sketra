@@ -25,7 +25,7 @@ class FeedPageGridCell extends StatelessWidget {
           ),
           clipBehavior: Clip.antiAlias,
           child: Padding(
-            padding: EdgeInsetsGeometry.fromLTRB(0, 0, 0, 8),
+            padding: EdgeInsetsGeometry.fromLTRB(0, 0, 0, 4),
             child: InkWell(
               onTap: onTap,
               borderRadius: BorderRadius.circular(12),
