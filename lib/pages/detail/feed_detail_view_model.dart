@@ -9,6 +9,7 @@ enum FeedDetailViewModelViewState {
   loading,
   loaded,
   error,
+  imageDownloadLoadingStarted,
   imageDownloadedToDevice,
   imageDownloadedToDeviceError,
 }
@@ -55,7 +56,7 @@ class FeedDetailViewModel extends ChangeNotifier {
   }
 
   Future<void> onDownloadWallpaper() async {
-    _viewState = FeedDetailViewModelViewState.loading;
+    _viewState = FeedDetailViewModelViewState.imageDownloadLoadingStarted;
     notifyListeners();
     try {
       _downloadWallpaperService.downloadImage(_wallpaper!.url);

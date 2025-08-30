@@ -77,6 +77,8 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
         return AsyncImage(url: viewModel.wallpaper!.url);
       case FeedDetailViewModelViewState.error:
         return _errorView(viewModel);
+      case FeedDetailViewModelViewState.imageDownloadLoadingStarted:
+        return AsyncImage(url: viewModel.wallpaper!.url);
       case FeedDetailViewModelViewState.imageDownloadedToDevice:
         return AsyncImage(url: viewModel.wallpaper!.url);
       case FeedDetailViewModelViewState.imageDownloadedToDeviceError:
@@ -85,19 +87,27 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
   }
 
   void _bindToast(FeedDetailViewModel viewModel) {
-    if (viewModel.viewState ==
-            FeedDetailViewModelViewState.imageDownloadedToDevice ||
-        viewModel.viewState ==
-            FeedDetailViewModelViewState.imageDownloadedToDeviceError) {
-      final message =
-          viewModel.viewState ==
-              FeedDetailViewModelViewState.imageDownloadedToDevice
-          ? "Image has been downloaded to your device gallery app"
-          : "Could not download the image to your device gallery. Please check your permission in system settings, or try again later.";
+    String? message;
 
+    switch (viewModel.viewState) {
+      case FeedDetailViewModelViewState.imageDownloadLoadingStarted:
+        message = "Downloading image...";
+        break;
+      case FeedDetailViewModelViewState.imageDownloadedToDevice:
+        message = "Image has been downloaded to your device gallery app";
+        break;
+      case FeedDetailViewModelViewState.imageDownloadedToDeviceError:
+        message =
+            "Could not download the image to your device gallery. Please check your permission in system settings, or try again later.";
+        break;
+      default:
+        break;
+    }
+
+    if (message != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Fluttertoast.showToast(
-          msg: message,
+          msg: message!,
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
