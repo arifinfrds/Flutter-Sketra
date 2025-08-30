@@ -14,7 +14,6 @@ class DownloadWallpaperService {
         options: Options(responseType: ResponseType.bytes),
       );
 
-      // Save image to gallery
       final result = await ImageGallerySaverPlus.saveImage(
         Uint8List.fromList(response.data),
         quality: 100,
@@ -30,6 +29,6 @@ class DownloadWallpaperService {
 
   String _makeImageName() {
     final uuid = const Uuid().v4();
-    return '${kAppName}-wallpaper-${uuid}';
+    return '$kAppName-wallpaper-$uuid';
   }
 }

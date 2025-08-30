@@ -51,12 +51,9 @@ class FeedDetailPage extends StatefulWidget {
 }
 
 class _FeedDetailPageState extends State<FeedDetailPage> {
-  late final FeedDetailViewModel _viewModel;
-
   @override
   Widget build(BuildContext context) {
     final viewModel = Provider.of<FeedDetailViewModel>(context);
-    _viewModel = viewModel;
 
     return Scaffold(
       appBar: AppBar(
@@ -64,7 +61,7 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: _body(viewModel),
-      floatingActionButton: _downloadWallpaperFAB(),
+      floatingActionButton: _downloadWallpaperFAB(viewModel),
     );
   }
 
@@ -79,7 +76,7 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
       case FeedDetailViewModelViewState.loaded:
         return AsyncImage(url: viewModel.wallpaper!.url);
       case FeedDetailViewModelViewState.error:
-        return _errorView();
+        return _errorView(viewModel);
       case FeedDetailViewModelViewState.imageDownloadedToDevice:
         return AsyncImage(url: viewModel.wallpaper!.url);
       case FeedDetailViewModelViewState.imageDownloadedToDeviceError:
@@ -114,15 +111,15 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
     return Center(child: CircularProgressIndicator());
   }
 
-  Widget _errorView() {
+  Widget _errorView(FeedDetailViewModel viewModel) {
     return ContentUnavailableView.name(
       title: "Failed to load wallpaper",
-      description: _viewModel.errorMessage,
-      onRetry: () => {_viewModel.onLoad()},
+      description: viewModel.errorMessage,
+      onRetry: () => {viewModel.onLoad()},
     );
   }
 
-  Widget _downloadWallpaperFAB() {
+  Widget _downloadWallpaperFAB(FeedDetailViewModel viewModel) {
     return FloatingActionButton(
       onPressed: () {
         showDialog(
@@ -130,9 +127,9 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
           builder: (context) => ConfirmationAlertDialog(
             title: "Download wallpaper",
             description:
-                "Are you sure you want to download ${_viewModel.pageTitle()} image?",
+                "Are you sure you want to download ${viewModel.pageTitle()} image?",
             onPrimaryAction: () {
-              _viewModel.onDownloadWallpaper();
+              viewModel.onDownloadWallpaper();
             },
             primaryActionTitle: 'Yes',
             cancelActionTitle: 'Cancel',
