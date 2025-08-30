@@ -19,10 +19,26 @@ class FeedPageGridCell extends StatelessWidget {
       borderRadius: BorderRadius.circular(12),
       child: Material(
         color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: AsyncImage(url: wallpaper.url),
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Padding(
+            padding: EdgeInsetsGeometry.fromLTRB(0, 0, 0, 8),
+            child: InkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(child: AsyncImage(url: wallpaper.url)),
+                  const SizedBox(height: 8),
+                  Text(wallpaper.title),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
