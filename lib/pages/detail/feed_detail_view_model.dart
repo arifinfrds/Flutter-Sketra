@@ -75,6 +75,7 @@ class FeedDetailViewModel extends ChangeNotifier {
           FeedDetailViewModelViewState.imageDownloadedToDeviceError ||
           FeedDetailViewModelViewState.settingImageAsWallpaperSuccessfully ||
           FeedDetailViewModelViewState.settingImageAsWallpaperError:
+        _viewState = FeedDetailViewModelViewState.loaded;
         notifyListeners();
         break;
       default:
