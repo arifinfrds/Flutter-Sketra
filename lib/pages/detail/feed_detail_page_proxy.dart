@@ -75,10 +75,7 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
           viewModel.onDownloadWallpaper();
         } else if (value == 'set_wallpaper') {
           if (Platform.isAndroid) {
-            // await viewModel.setAsWallpaper();
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text("Wallpaper set")));
+            viewModel.setAsWallpaper();
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -119,6 +116,10 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
         return AsyncImage(url: viewModel.wallpaper!.url);
       case FeedDetailViewModelViewState.imageDownloadedToDeviceError:
         return AsyncImage(url: viewModel.wallpaper!.url);
+      case FeedDetailViewModelViewState.settingImageAsWallpaperSuccessfully:
+        return AsyncImage(url: viewModel.wallpaper!.url);
+      case FeedDetailViewModelViewState.settingImageAsWallpaperError:
+        return AsyncImage(url: viewModel.wallpaper!.url);
     }
   }
 
@@ -135,6 +136,12 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
       case FeedDetailViewModelViewState.imageDownloadedToDeviceError:
         message =
             "Could not download the image to your device gallery. Please check your permission in system settings, or try again later.";
+        break;
+      case FeedDetailViewModelViewState.settingImageAsWallpaperSuccessfully:
+        message = "Wallpaper set successfully!";
+        break;
+      case FeedDetailViewModelViewState.settingImageAsWallpaperError:
+        message = "Failed to set wallpaper. Please try again.";
         break;
       default:
         break;

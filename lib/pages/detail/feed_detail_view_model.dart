@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:sketra/models/download_wallpaper_service.dart';
 import 'package:sketra/models/wallpaper.dart';
-
 import '../../models/mock_wallpaper_service.dart';
 
 enum FeedDetailViewModelViewState {
@@ -12,6 +11,8 @@ enum FeedDetailViewModelViewState {
   imageDownloadLoadingStarted,
   imageDownloadedToDevice,
   imageDownloadedToDeviceError,
+  settingImageAsWallpaperSuccessfully,
+  settingImageAsWallpaperError,
 }
 
 class FeedDetailViewModel extends ChangeNotifier {
@@ -71,9 +72,29 @@ class FeedDetailViewModel extends ChangeNotifier {
   void resetDownloadState() {
     if (_viewState == FeedDetailViewModelViewState.imageDownloadedToDevice ||
         _viewState ==
-            FeedDetailViewModelViewState.imageDownloadedToDeviceError) {
+            FeedDetailViewModelViewState.imageDownloadedToDeviceError ||
+        _viewState ==
+            FeedDetailViewModelViewState.settingImageAsWallpaperSuccessfully ||
+        _viewState ==
+            FeedDetailViewModelViewState.settingImageAsWallpaperError) {
       _viewState = FeedDetailViewModelViewState.loaded;
       notifyListeners();
     }
+  }
+
+  void setAsWallpaper() async {
+    _viewState = FeedDetailViewModelViewState.imageDownloadLoadingStarted;
+    notifyListeners();
+    try {
+      final url = _wallpaper!.url;
+      await _downloadWallpaperService.setImageAsSystemWallpaper(url);
+      _viewState = FeedDetailViewModelViewState.imageDownloadedToDevice;
+      _viewState =
+          FeedDetailViewModelViewState.settingImageAsWallpaperSuccessfully;
+    } catch (exception) {
+      _errorMessage = exception.toString();
+      _viewState = FeedDetailViewModelViewState.settingImageAsWallpaperError;
+    }
+    notifyListeners();
   }
 }
