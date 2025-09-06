@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -59,9 +61,43 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
       appBar: AppBar(
         title: Text(viewModel.pageTitle()),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        actions: [_popupMenuButton(viewModel)],
       ),
       body: _body(viewModel),
       floatingActionButton: _downloadWallpaperFAB(viewModel),
+    );
+  }
+
+  Widget _popupMenuButton(FeedDetailViewModel viewModel) {
+    return PopupMenuButton<String>(
+      onSelected: (value) async {
+        if (value == 'save') {
+          viewModel.onDownloadWallpaper();
+        } else if (value == 'set_wallpaper') {
+          if (Platform.isAndroid) {
+            // await viewModel.setAsWallpaper();
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text("Wallpaper set")));
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Setting wallpaper is only available on Android"),
+              ),
+            );
+          }
+        }
+      },
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+        const PopupMenuItem<String>(
+          value: 'save',
+          child: Text('Save to Device Gallery'),
+        ),
+        const PopupMenuItem<String>(
+          value: 'set_wallpaper',
+          child: Text('Set as Wallpaper'),
+        ),
+      ],
     );
   }
 

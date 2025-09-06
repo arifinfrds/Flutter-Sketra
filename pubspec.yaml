@@ -39,6 +39,7 @@ dependencies:
   dio: ^5.9.0
   uuid: ^4.4.2
   fluttertoast: ^8.2.12
+  wallpaper_manager_flutter: 1.0.1
 
 dev_dependencies:
   flutter_test:
