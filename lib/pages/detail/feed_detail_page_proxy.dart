@@ -102,23 +102,18 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
     _bindToast(viewModel);
 
     switch (viewModel.viewState) {
-      case FeedDetailViewModelViewState.initial:
-        return _loadingView();
-      case FeedDetailViewModelViewState.loading:
+      case FeedDetailViewModelViewState.initial ||
+          FeedDetailViewModelViewState.loading:
         return _loadingView();
       case FeedDetailViewModelViewState.loaded:
         return AsyncImage(url: viewModel.wallpaper!.url);
       case FeedDetailViewModelViewState.error:
         return _errorView(viewModel);
-      case FeedDetailViewModelViewState.imageDownloadLoadingStarted:
-        return AsyncImage(url: viewModel.wallpaper!.url);
-      case FeedDetailViewModelViewState.imageDownloadedToDevice:
-        return AsyncImage(url: viewModel.wallpaper!.url);
-      case FeedDetailViewModelViewState.imageDownloadedToDeviceError:
-        return AsyncImage(url: viewModel.wallpaper!.url);
-      case FeedDetailViewModelViewState.settingImageAsWallpaperSuccessfully:
-        return AsyncImage(url: viewModel.wallpaper!.url);
-      case FeedDetailViewModelViewState.settingImageAsWallpaperError:
+      case FeedDetailViewModelViewState.imageDownloadLoadingStarted ||
+          FeedDetailViewModelViewState.imageDownloadedToDevice ||
+          FeedDetailViewModelViewState.imageDownloadedToDeviceError ||
+          FeedDetailViewModelViewState.settingImageAsWallpaperSuccessfully ||
+          FeedDetailViewModelViewState.settingImageAsWallpaperError:
         return AsyncImage(url: viewModel.wallpaper!.url);
     }
   }

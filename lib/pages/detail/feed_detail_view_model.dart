@@ -70,15 +70,15 @@ class FeedDetailViewModel extends ChangeNotifier {
   }
 
   void resetDownloadState() {
-    if (_viewState == FeedDetailViewModelViewState.imageDownloadedToDevice ||
-        _viewState ==
-            FeedDetailViewModelViewState.imageDownloadedToDeviceError ||
-        _viewState ==
-            FeedDetailViewModelViewState.settingImageAsWallpaperSuccessfully ||
-        _viewState ==
-            FeedDetailViewModelViewState.settingImageAsWallpaperError) {
-      _viewState = FeedDetailViewModelViewState.loaded;
-      notifyListeners();
+    switch (_viewState) {
+      case FeedDetailViewModelViewState.imageDownloadedToDevice ||
+          FeedDetailViewModelViewState.imageDownloadedToDeviceError ||
+          FeedDetailViewModelViewState.settingImageAsWallpaperSuccessfully ||
+          FeedDetailViewModelViewState.settingImageAsWallpaperError:
+        notifyListeners();
+        break;
+      default:
+        break;
     }
   }
 
