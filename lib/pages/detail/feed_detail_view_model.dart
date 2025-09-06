@@ -97,4 +97,31 @@ class FeedDetailViewModel extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  String? getToastMessage() {
+    String? message;
+
+    switch (viewState) {
+      case FeedDetailViewModelViewState.imageDownloadLoadingStarted:
+        message = "Downloading image...";
+        break;
+      case FeedDetailViewModelViewState.imageDownloadedToDevice:
+        message = "Image has been downloaded to your device gallery app";
+        break;
+      case FeedDetailViewModelViewState.imageDownloadedToDeviceError:
+        message =
+            "Could not download the image to your device gallery. Please check your permission in system settings, or try again later.";
+        break;
+      case FeedDetailViewModelViewState.settingImageAsWallpaperSuccessfully:
+        message = "Wallpaper set successfully!";
+        break;
+      case FeedDetailViewModelViewState.settingImageAsWallpaperError:
+        message = "Failed to set wallpaper. Please try again.";
+        break;
+      default:
+        break;
+    }
+
+    return message;
+  }
 }
