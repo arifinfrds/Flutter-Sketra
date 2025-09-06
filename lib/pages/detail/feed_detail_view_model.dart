@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:sketra/models/download_wallpaper_service.dart';
 import 'package:sketra/models/wallpaper.dart';
 import '../../models/mock_wallpaper_service.dart';
+import '../../models/set_wallpaper_type.dart';
 
 enum FeedDetailViewModelViewState {
   initial,
@@ -83,12 +84,15 @@ class FeedDetailViewModel extends ChangeNotifier {
     }
   }
 
-  void setAsWallpaper() async {
+  void setAsWallpaper(SetWallpaperType setWallpaperType) async {
     _viewState = FeedDetailViewModelViewState.imageDownloadLoadingStarted;
     notifyListeners();
     try {
       final url = _wallpaper!.url;
-      await _downloadWallpaperService.setImageAsSystemWallpaper(url);
+      await _downloadWallpaperService.setImageAsSystemWallpaper(
+        url,
+        setWallpaperType,
+      );
       _viewState = FeedDetailViewModelViewState.imageDownloadedToDevice;
       _viewState =
           FeedDetailViewModelViewState.settingImageAsWallpaperSuccessfully;

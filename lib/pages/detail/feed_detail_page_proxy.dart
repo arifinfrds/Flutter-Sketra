@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:sketra/models/download_wallpaper_service.dart';
 import 'package:sketra/models/mock_wallpaper_service.dart';
+import 'package:sketra/models/set_wallpaper_type.dart';
 import 'package:sketra/pages/detail/feed_detail_view_model.dart';
 
 import '../shared/async_image.dart';
@@ -71,18 +72,15 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
   Widget _popupMenuButton(FeedDetailViewModel viewModel) {
     return PopupMenuButton<String>(
       onSelected: (value) async {
-        if (value == 'save') {
-          viewModel.onDownloadWallpaper();
-        } else if (value == 'set_wallpaper') {
-          if (Platform.isAndroid) {
-            viewModel.setAsWallpaper();
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Setting wallpaper is only available on Android"),
-              ),
-            );
-          }
+        switch (value) {
+          case 'save':
+            viewModel.onDownloadWallpaper();
+          case 'set_wallpaper_both':
+            _setAsWallpaper(viewModel, SetWallpaperType.bothScreens);
+          case 'set_wallpaper_lockscreen':
+            _setAsWallpaper(viewModel, SetWallpaperType.lockScreen);
+          case 'set_wallpaper_home':
+            _setAsWallpaper(viewModel, SetWallpaperType.homeScreen);
         }
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -91,11 +89,34 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
           child: Text('Save to Device Gallery'),
         ),
         const PopupMenuItem<String>(
-          value: 'set_wallpaper',
-          child: Text('Set as Wallpaper'),
+          value: 'set_wallpaper_both',
+          child: Text('Set as Wallpaper on home and lock screens'),
+        ),
+        const PopupMenuItem<String>(
+          value: 'set_wallpaper_lockscreen',
+          child: Text('Set as Wallpaper on lock screen'),
+        ),
+        const PopupMenuItem<String>(
+          value: 'set_wallpaper_home screen',
+          child: Text('Set as Wallpaper on home screen'),
         ),
       ],
     );
+  }
+
+  void _setAsWallpaper(
+    FeedDetailViewModel viewModel,
+    SetWallpaperType setWallpaperType,
+  ) {
+    if (Platform.isAndroid) {
+      viewModel.setAsWallpaper(setWallpaperType);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Setting wallpaper is only available on Android"),
+        ),
+      );
+    }
   }
 
   Widget _body(FeedDetailViewModel viewModel) {

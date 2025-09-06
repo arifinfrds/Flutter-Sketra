@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 import 'package:sketra/constants.dart';
+import 'package:sketra/models/set_wallpaper_type.dart';
 import 'package:uuid/uuid.dart';
 import 'package:wallpaper_manager_flutter/wallpaper_manager_flutter.dart';
 
@@ -29,7 +30,10 @@ class DownloadWallpaperService {
     }
   }
 
-  Future<void> setImageAsSystemWallpaper(String imageUrl) async {
+  Future<void> setImageAsSystemWallpaper(
+    String imageUrl,
+    SetWallpaperType setWallpaperType,
+  ) async {
     if (!Platform.isAndroid) {
       throw UnsupportedError("Setting wallpaper is only supported on Android");
     }
@@ -44,8 +48,10 @@ class DownloadWallpaperService {
       final file = File('${tempDir.path}/${_makeImageName()}.png');
       await file.writeAsBytes(response.data);
 
-      int location = WallpaperManagerFlutter.bothScreens;
-      await WallpaperManagerFlutter().setWallpaper(file, location);
+      await WallpaperManagerFlutter().setWallpaper(
+        file,
+        setWallpaperType.toWallpaperManagerFlutter(),
+      );
 
       print("✅ Wallpaper set successfully");
     } catch (e) {
