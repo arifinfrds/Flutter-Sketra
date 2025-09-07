@@ -66,21 +66,25 @@ class _FeedPageState extends State<FeedPage> {
       case FeedViewState.loading:
         return const Center(child: CircularProgressIndicator());
       case FeedViewState.error:
-        return ContentUnavailableView.name(
-          title: "Failed to load wallpapers",
-          description: viewModel.errorMessage,
-          onRetry: () => {viewModel.onLoad()},
-        );
+        return _errorView();
       case FeedViewState.empty:
         return const Center(child: Text("No wallpapers available"));
       case FeedViewState.loaded:
-        return gridView(viewModel.wallpapers);
+        return _gridView(viewModel.wallpapers);
       default:
         return const SizedBox();
     }
   }
 
-  GridView gridView(List<Wallpaper> wallpapers) {
+  Widget _errorView() {
+    return ContentUnavailableView.name(
+      title: "Failed to load wallpapers",
+      description: viewModel.errorMessage,
+      onRetry: () => {viewModel.onLoad()},
+    );
+  }
+
+  GridView _gridView(List<Wallpaper> wallpapers) {
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -91,18 +95,26 @@ class _FeedPageState extends State<FeedPage> {
       padding: const EdgeInsets.all(8),
       itemCount: wallpapers.length,
       itemBuilder: (context, index) {
-        final wallpaper = wallpapers[index];
-        return FeedPageGridCell(
-          wallpaper: wallpaper,
-          onTap: () => {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => FeedDetailPageProxy(wallpaper.id),
-              ),
-            ),
-          },
-        );
+        return _feedPageGridCell(wallpapers[index]);
       },
+    );
+  }
+
+  Widget _feedPageGridCell(Wallpaper wallpaper) {
+    return FeedPageGridCell(
+      wallpaper: wallpaper,
+      onTap: () => _showFeedDetailPage(context, wallpaper),
+    );
+  }
+
+  Future<dynamic> _showFeedDetailPage(
+    BuildContext context,
+    Wallpaper wallpaper,
+  ) {
+    return Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => FeedDetailPageProxy(wallpaper.id),
+      ),
     );
   }
 }
