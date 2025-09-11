@@ -80,7 +80,7 @@ class _FeedPageState extends State<FeedPage> {
     return ContentUnavailableView.name(
       title: "Failed to load wallpapers",
       description: viewModel.errorMessage,
-      onRetry: () => {viewModel.onLoad()},
+      onRetry: () => viewModel.onLoad(),
     );
   }
 

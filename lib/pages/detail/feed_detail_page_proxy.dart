@@ -73,12 +73,15 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
   @override
   Widget build(BuildContext context) {
     final viewModel = Provider.of<FeedDetailViewModel>(context);
+    bool isLoading =
+        viewModel.viewState == ViewState.loading ||
+        viewModel.viewState == ViewState.imageDownloadLoadingStarted;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(viewModel.pageTitle()),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        actions: [_popupMenuButton(viewModel)],
+        actions: isLoading ? [] : [_popupMenuButton(viewModel)],
       ),
       body: _body(viewModel),
       floatingActionButton: Platform.isAndroid
@@ -205,46 +208,66 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
   }
 
   Widget _downloadWallpaperFAB(FeedDetailViewModel viewModel) {
+    bool isLoading =
+        viewModel.viewState == ViewState.loading ||
+        viewModel.viewState == ViewState.imageDownloadLoadingStarted;
+
     return FloatingActionButton(
       onPressed: () {
-        showDialog(
-          context: context,
-          builder: (context) => ConfirmationAlertDialog(
-            title: "Download wallpaper",
-            description:
-                "Are you sure you want to download ${viewModel.pageTitle()} image?",
-            onPrimaryAction: () {
-              viewModel.onDownloadWallpaper();
-            },
-            primaryActionTitle: 'Yes',
-            cancelActionTitle: 'Cancel',
-          ),
-        );
+        if (isLoading) {
+          return;
+        } else {
+          showDialog(
+            context: context,
+            builder: (context) => ConfirmationAlertDialog(
+              title: "Download wallpaper",
+              description:
+                  "Are you sure you want to download ${viewModel.pageTitle()} image?",
+              onPrimaryAction: () {
+                viewModel.onDownloadWallpaper();
+              },
+              primaryActionTitle: 'Yes',
+              cancelActionTitle: 'Cancel',
+            ),
+          );
+        }
       },
-      child: const Icon(Icons.arrow_circle_down_rounded),
+      child: isLoading
+          ? SizedBox(width: 24, height: 24, child: _loadingView())
+          : const Icon(Icons.arrow_circle_down_rounded),
     );
   }
 
   Widget _setAsWallpaperFAB(FeedDetailViewModel viewModel) {
+    bool isLoading =
+        viewModel.viewState == ViewState.loading ||
+        viewModel.viewState == ViewState.imageDownloadLoadingStarted;
+
     return FloatingActionButton(
       onPressed: () {
-        showDialog(
-          context: context,
-          builder: (alertDialogContext) => ConfirmationAlertDialog(
-            title: "Set as wallpaper",
-            description:
-                "Are you sure you want to set ${viewModel.pageTitle()} image as wallpaper?",
-            onPrimaryAction: () {
-              Future.delayed(const Duration(milliseconds: 300), () {
-                _showSetWallpaperAlertBottomSheet(viewModel);
-              });
-            },
-            primaryActionTitle: 'Yes',
-            cancelActionTitle: 'Cancel',
-          ),
-        );
+        if (isLoading) {
+          return;
+        } else {
+          showDialog(
+            context: context,
+            builder: (alertDialogContext) => ConfirmationAlertDialog(
+              title: "Set as wallpaper",
+              description:
+                  "Are you sure you want to set ${viewModel.pageTitle()} image as wallpaper?",
+              onPrimaryAction: () {
+                Future.delayed(const Duration(milliseconds: 300), () {
+                  _showSetWallpaperAlertBottomSheet(viewModel);
+                });
+              },
+              primaryActionTitle: 'Yes',
+              cancelActionTitle: 'Cancel',
+            ),
+          );
+        }
       },
-      child: const Icon(Icons.wallpaper),
+      child: isLoading
+          ? SizedBox(width: 24, height: 24, child: _loadingView())
+          : const Icon(Icons.wallpaper),
     );
   }
 }
