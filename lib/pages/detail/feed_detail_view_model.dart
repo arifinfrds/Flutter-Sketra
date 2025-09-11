@@ -70,20 +70,6 @@ class FeedDetailViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void resetDownloadState() {
-    switch (_viewState) {
-      case FeedDetailViewModelViewState.imageDownloadedToDevice ||
-          FeedDetailViewModelViewState.imageDownloadedToDeviceError ||
-          FeedDetailViewModelViewState.settingImageAsWallpaperSuccessfully ||
-          FeedDetailViewModelViewState.settingImageAsWallpaperError:
-        _viewState = FeedDetailViewModelViewState.loaded;
-        notifyListeners();
-        break;
-      default:
-        break;
-    }
-  }
-
   void setAsWallpaper(SetWallpaperType setWallpaperType) async {
     _viewState = FeedDetailViewModelViewState.imageDownloadLoadingStarted;
     notifyListeners();

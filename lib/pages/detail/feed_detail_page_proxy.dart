@@ -173,7 +173,6 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
         );
-        viewModel.resetDownloadState();
       });
     }
   }
