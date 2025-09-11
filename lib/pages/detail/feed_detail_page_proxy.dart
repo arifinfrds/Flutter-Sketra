@@ -13,15 +13,28 @@ import '../shared/async_image.dart';
 import '../shared/content_unavailable_view.dart';
 import '../shared/confirmation_alert_dialog.dart';
 
-class FeedDetailPageProxy extends StatelessWidget {
+class FeedDetailPageProxy extends StatefulWidget {
   final String wallpaperId;
 
   const FeedDetailPageProxy(this.wallpaperId, {super.key});
 
+  @override
+  State<FeedDetailPageProxy> createState() => _FeedDetailPageProxyState();
+}
+
+class _FeedDetailPageProxyState extends State<FeedDetailPageProxy> {
+  late Future<FeedDetailViewModel> _future;
+
+  @override
+  void initState() {
+    super.initState();
+    _future = _loadViewModel();
+  }
+
   Future<FeedDetailViewModel> _loadViewModel() async {
     final jsonString = await rootBundle.loadString('assets/mock_feed.json');
     final viewModel = FeedDetailViewModel(
-      wallpaperId,
+      widget.wallpaperId,
       MockWallpaperService.name(jsonString),
       DownloadWallpaperService(),
     );
@@ -32,7 +45,7 @@ class FeedDetailPageProxy extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<FeedDetailViewModel>(
-      future: _loadViewModel(),
+      future: _future, // ✅ cached future
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
@@ -165,10 +178,10 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
   void _bindToast(FeedDetailViewModel viewModel) {
     String? message = viewModel.getToastMessage();
 
-    if (message != null) {
+    if (message != null || message != "") {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Fluttertoast.showToast(
-          msg: message,
+          msg: message!,
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,

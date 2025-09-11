@@ -79,7 +79,6 @@ class FeedDetailViewModel extends ChangeNotifier {
         url,
         setWallpaperType,
       );
-      _viewState = FeedDetailViewModelViewState.imageDownloadedToDevice;
       _viewState =
           FeedDetailViewModelViewState.settingImageAsWallpaperSuccessfully;
     } catch (exception) {
