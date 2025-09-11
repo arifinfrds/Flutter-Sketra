@@ -13,6 +13,8 @@ import '../shared/async_image.dart';
 import '../shared/content_unavailable_view.dart';
 import '../shared/confirmation_alert_dialog.dart';
 
+typedef ViewState = FeedDetailViewModelViewState;
+
 class FeedDetailPageProxy extends StatefulWidget {
   final String wallpaperId;
 
@@ -28,6 +30,7 @@ class _FeedDetailPageProxyState extends State<FeedDetailPageProxy> {
   @override
   void initState() {
     super.initState();
+
     _future = _loadViewModel();
   }
 
@@ -159,18 +162,17 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
     _bindToast(viewModel);
 
     switch (viewModel.viewState) {
-      case FeedDetailViewModelViewState.initial ||
-          FeedDetailViewModelViewState.loading:
+      case ViewState.initial || ViewState.loading:
         return _loadingView();
-      case FeedDetailViewModelViewState.loaded:
+      case ViewState.loaded:
         return AsyncImage(url: viewModel.wallpaper!.url);
-      case FeedDetailViewModelViewState.error:
+      case ViewState.error:
         return _errorView(viewModel);
-      case FeedDetailViewModelViewState.imageDownloadLoadingStarted ||
-          FeedDetailViewModelViewState.imageDownloadedToDevice ||
-          FeedDetailViewModelViewState.imageDownloadedToDeviceError ||
-          FeedDetailViewModelViewState.settingImageAsWallpaperSuccessfully ||
-          FeedDetailViewModelViewState.settingImageAsWallpaperError:
+      case ViewState.imageDownloadLoadingStarted ||
+          ViewState.imageDownloadedToDevice ||
+          ViewState.imageDownloadedToDeviceError ||
+          ViewState.settingImageAsWallpaperSuccessfully ||
+          ViewState.settingImageAsWallpaperError:
         return AsyncImage(url: viewModel.wallpaper!.url);
     }
   }

@@ -16,18 +16,19 @@ enum FeedDetailViewModelViewState {
   settingImageAsWallpaperError,
 }
 
+typedef ViewState = FeedDetailViewModelViewState;
+
 class FeedDetailViewModel extends ChangeNotifier {
   final String _wallpaperId;
   final MockWallpaperService _wallpaperService;
   final DownloadWallpaperService _downloadWallpaperService;
 
   Wallpaper? _wallpaper;
-  FeedDetailViewModelViewState _viewState =
-      FeedDetailViewModelViewState.initial;
+  ViewState _viewState = ViewState.initial;
 
   Wallpaper? get wallpaper => _wallpaper;
 
-  FeedDetailViewModelViewState get viewState => _viewState;
+  ViewState get viewState => _viewState;
 
   String _errorMessage = "";
 
@@ -40,15 +41,15 @@ class FeedDetailViewModel extends ChangeNotifier {
   );
 
   Future<void> onLoad() async {
-    _viewState = FeedDetailViewModelViewState.loading;
+    _viewState = ViewState.loading;
     notifyListeners();
 
     try {
       _wallpaper = await _wallpaperService.loadWallpaper(_wallpaperId);
-      _viewState = FeedDetailViewModelViewState.loaded;
+      _viewState = ViewState.loaded;
     } catch (exception) {
       _errorMessage = exception.toString();
-      _viewState = FeedDetailViewModelViewState.error;
+      _viewState = ViewState.error;
     }
     notifyListeners();
   }
@@ -58,20 +59,20 @@ class FeedDetailViewModel extends ChangeNotifier {
   }
 
   Future<void> onDownloadWallpaper() async {
-    _viewState = FeedDetailViewModelViewState.imageDownloadLoadingStarted;
+    _viewState = ViewState.imageDownloadLoadingStarted;
     notifyListeners();
     try {
       _downloadWallpaperService.downloadImage(_wallpaper!.url);
-      _viewState = FeedDetailViewModelViewState.imageDownloadedToDevice;
+      _viewState = ViewState.imageDownloadedToDevice;
     } catch (exception) {
       _errorMessage = exception.toString();
-      _viewState = FeedDetailViewModelViewState.imageDownloadedToDeviceError;
+      _viewState = ViewState.imageDownloadedToDeviceError;
     }
     notifyListeners();
   }
 
   void setAsWallpaper(SetWallpaperType setWallpaperType) async {
-    _viewState = FeedDetailViewModelViewState.imageDownloadLoadingStarted;
+    _viewState = ViewState.imageDownloadLoadingStarted;
     notifyListeners();
     try {
       final url = _wallpaper!.url;
@@ -79,11 +80,10 @@ class FeedDetailViewModel extends ChangeNotifier {
         url,
         setWallpaperType,
       );
-      _viewState =
-          FeedDetailViewModelViewState.settingImageAsWallpaperSuccessfully;
+      _viewState = ViewState.settingImageAsWallpaperSuccessfully;
     } catch (exception) {
       _errorMessage = exception.toString();
-      _viewState = FeedDetailViewModelViewState.settingImageAsWallpaperError;
+      _viewState = ViewState.settingImageAsWallpaperError;
     }
     notifyListeners();
   }
@@ -92,20 +92,20 @@ class FeedDetailViewModel extends ChangeNotifier {
     String? message;
 
     switch (viewState) {
-      case FeedDetailViewModelViewState.imageDownloadLoadingStarted:
+      case ViewState.imageDownloadLoadingStarted:
         message = "Downloading image...";
         break;
-      case FeedDetailViewModelViewState.imageDownloadedToDevice:
+      case ViewState.imageDownloadedToDevice:
         message = "Image has been downloaded to your device gallery app";
         break;
-      case FeedDetailViewModelViewState.imageDownloadedToDeviceError:
+      case ViewState.imageDownloadedToDeviceError:
         message =
             "Could not download the image to your device gallery. Please check your permission in system settings, or try again later.";
         break;
-      case FeedDetailViewModelViewState.settingImageAsWallpaperSuccessfully:
+      case ViewState.settingImageAsWallpaperSuccessfully:
         message = "Wallpaper set successfully!";
         break;
-      case FeedDetailViewModelViewState.settingImageAsWallpaperError:
+      case ViewState.settingImageAsWallpaperError:
         message = "Failed to set wallpaper. Please try again.";
         break;
       default:
