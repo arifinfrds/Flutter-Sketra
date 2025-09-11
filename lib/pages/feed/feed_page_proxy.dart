@@ -15,7 +15,7 @@ class FeedPageProxy extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => FeedViewModel()..loadWallpapers(),
+      create: (_) => FeedViewModel()..onLoad(),
       child: FeedPage(title: title),
     );
   }
@@ -37,7 +37,7 @@ class _FeedPageState extends State<FeedPage> {
   void initState() {
     super.initState();
     viewModel.addListener(_onViewModelChanged);
-    viewModel.loadWallpapers();
+    viewModel.onLoad();
   }
 
   @override
@@ -69,8 +69,13 @@ class _FeedPageState extends State<FeedPage> {
         return _errorView();
       case FeedViewState.empty:
         return const Center(child: Text("No wallpapers available"));
-      case FeedViewState.loaded:
-        return _gridView(viewModel.wallpapers);
+      case FeedViewState.loaded || FeedViewState.pullToRefreshLoading:
+        return RefreshIndicator(
+          child: _gridView(viewModel.wallpapers),
+          onRefresh: () {
+            return viewModel.onPullToRefresh();
+          },
+        );
       default:
         return const SizedBox();
     }

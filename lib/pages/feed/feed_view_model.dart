@@ -4,7 +4,16 @@ import 'package:sketra/models/mock_wallpaper_service.dart';
 import 'package:sketra/models/wallpaper.dart';
 import 'package:sketra/models/wallpaper_response.dart';
 
-enum FeedViewState { initial, loading, empty, loaded, error }
+enum FeedViewState {
+  initial,
+  loading,
+  empty,
+  loaded,
+  error,
+  pullToRefreshLoading,
+}
+
+enum FeedViewLoadType { normal, pullToRefresh }
 
 class FeedViewModel extends ChangeNotifier {
   List<Wallpaper> wallpapers = [];
@@ -12,18 +21,18 @@ class FeedViewModel extends ChangeNotifier {
   String errorMessage = "";
 
   Future<void> onLoad() async {
-    loadWallpapers();
+    loadWallpapers(FeedViewLoadType.normal);
   }
 
-  void loadWallpapers() async {
-    viewState = FeedViewState.loading;
+  void loadWallpapers(FeedViewLoadType loadType) async {
+    viewState = loadType == FeedViewLoadType.normal
+        ? FeedViewState.loading
+        : FeedViewState.pullToRefreshLoading;
     notifyListeners();
     try {
       await Future.delayed(const Duration(seconds: 2));
       final jsonString = await rootBundle.loadString('assets/mock_feed.json');
-      MockWallpaperService repository = MockWallpaperService.name(
-        jsonString,
-      );
+      MockWallpaperService repository = MockWallpaperService.name(jsonString);
       WallpaperResponse response = await repository.loadWallpapers();
 
       wallpapers = response.wallpapers;
@@ -35,5 +44,9 @@ class FeedViewModel extends ChangeNotifier {
       viewState = FeedViewState.error;
     }
     notifyListeners();
+  }
+
+  Future<void> onPullToRefresh() async {
+    loadWallpapers(FeedViewLoadType.pullToRefresh);
   }
 }
