@@ -75,12 +75,8 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
         switch (value) {
           case 'save':
             viewModel.onDownloadWallpaper();
-          case 'set_wallpaper_both':
-            _setAsWallpaper(viewModel, SetWallpaperType.bothScreens);
-          case 'set_wallpaper_lockscreen':
-            _setAsWallpaper(viewModel, SetWallpaperType.lockScreen);
-          case 'set_wallpaper_home':
-            _setAsWallpaper(viewModel, SetWallpaperType.homeScreen);
+          case 'set_wallpaper':
+            _showSetWallpaperAlertBottomSheet(viewModel);
         }
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -89,18 +85,43 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
           child: Text('Save to Device Gallery'),
         ),
         const PopupMenuItem<String>(
-          value: 'set_wallpaper_both',
-          child: Text('Set as Wallpaper on home and lock screens'),
-        ),
-        const PopupMenuItem<String>(
-          value: 'set_wallpaper_lockscreen',
-          child: Text('Set as Wallpaper on lock screen'),
-        ),
-        const PopupMenuItem<String>(
-          value: 'set_wallpaper_home screen',
-          child: Text('Set as Wallpaper on home screen'),
+          value: 'set_wallpaper',
+          child: Text('Set as wallpaper'),
         ),
       ],
+    );
+  }
+
+  void _showSetWallpaperAlertBottomSheet(FeedDetailViewModel viewModel) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Wrap(
+          children: [
+            ListTile(
+              title: Text('Set as Wallpaper on lock screen'),
+              onTap: () {
+                _setAsWallpaper(viewModel, SetWallpaperType.lockScreen);
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Text('Set as Wallpaper on home screen'),
+              onTap: () {
+                _setAsWallpaper(viewModel, SetWallpaperType.homeScreen);
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Text('Set as Wallpaper on home and lock screens'),
+              onTap: () {
+                _setAsWallpaper(viewModel, SetWallpaperType.bothScreens);
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
