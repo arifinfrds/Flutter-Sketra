@@ -65,7 +65,9 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
         actions: [_popupMenuButton(viewModel)],
       ),
       body: _body(viewModel),
-      floatingActionButton: _downloadWallpaperFAB(viewModel),
+      floatingActionButton: Platform.isAndroid
+          ? _setAsWallpaperFAB(viewModel)
+          : _downloadWallpaperFAB(viewModel),
     );
   }
 
@@ -206,6 +208,29 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
         );
       },
       child: const Icon(Icons.arrow_circle_down_rounded),
+    );
+  }
+
+  Widget _setAsWallpaperFAB(FeedDetailViewModel viewModel) {
+    return FloatingActionButton(
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (alertDialogContext) => ConfirmationAlertDialog(
+            title: "Set as wallpaper",
+            description:
+                "Are you sure you want to set ${viewModel.pageTitle()} image as wallpaper?",
+            onPrimaryAction: () {
+              Future.delayed(const Duration(milliseconds: 300), () {
+                _showSetWallpaperAlertBottomSheet(viewModel);
+              });
+            },
+            primaryActionTitle: 'Yes',
+            cancelActionTitle: 'Cancel',
+          ),
+        );
+      },
+      child: const Icon(Icons.wallpaper),
     );
   }
 }
