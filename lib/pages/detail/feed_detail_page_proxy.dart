@@ -97,7 +97,11 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
           case 'save':
             viewModel.onDownloadWallpaper();
           case 'set_wallpaper':
-            _showSetWallpaperAlertBottomSheet(viewModel);
+            if (Platform.isAndroid) {
+              _showSetWallpaperAlertBottomSheetForAndroid(viewModel);
+            } else {
+              _showSetWallpaperAlertBottomSheetForIOS(viewModel);
+            }
         }
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -105,15 +109,20 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
           value: 'save',
           child: Text('Save to Device Gallery'),
         ),
-        const PopupMenuItem<String>(
+        PopupMenuItem<String>(
           value: 'set_wallpaper',
-          child: Text('Set as wallpaper'),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [Text('Set as wallpaper')],
+          ),
         ),
       ],
     );
   }
 
-  void _showSetWallpaperAlertBottomSheet(FeedDetailViewModel viewModel) {
+  void _showSetWallpaperAlertBottomSheetForAndroid(
+    FeedDetailViewModel viewModel,
+  ) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -159,6 +168,70 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
         ),
       );
     }
+  }
+
+  void _showSetWallpaperAlertBottomSheetForIOS(FeedDetailViewModel viewModel) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 8),
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                const Text(
+                  "Set Wallpaper on iOS",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  "Due to iOS restrictions, you cannot set the wallpaper directly from the app. "
+                  "Please follow these steps:",
+                  style: TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 16),
+                const Text("1. Download the image to your Photos app."),
+                const SizedBox(height: 8),
+                const Text("2. Open the Photos app and select the image."),
+                const SizedBox(height: 8),
+                const Text(
+                  "3. Tap the share button and select 'Use as Wallpaper'.",
+                ),
+                const SizedBox(height: 42),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text("OK"),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Widget _body(FeedDetailViewModel viewModel) {
@@ -256,7 +329,7 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
                   "Are you sure you want to set ${viewModel.pageTitle()} image as wallpaper?",
               onPrimaryAction: () {
                 Future.delayed(const Duration(milliseconds: 300), () {
-                  _showSetWallpaperAlertBottomSheet(viewModel);
+                  _showSetWallpaperAlertBottomSheetForAndroid(viewModel);
                 });
               },
               primaryActionTitle: 'Yes',
