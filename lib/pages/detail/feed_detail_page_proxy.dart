@@ -98,7 +98,7 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
             viewModel.onDownloadWallpaper();
           case 'set_wallpaper':
             if (Platform.isAndroid) {
-              _showSetWallpaperAlertBottomSheetForAndroid(viewModel);
+              _showSetAsWallpaperConfirmationAlertDialog(viewModel);
             } else {
               _showSetWallpaperAlertBottomSheetForIOS(viewModel);
             }
@@ -290,24 +290,30 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
         if (isLoading) {
           return;
         } else {
-          showDialog(
-            context: context,
-            builder: (context) => ConfirmationAlertDialog(
-              title: "Download wallpaper",
-              description:
-                  "Are you sure you want to download ${viewModel.pageTitle()} image?",
-              onPrimaryAction: () {
-                viewModel.onDownloadWallpaper();
-              },
-              primaryActionTitle: 'Yes',
-              cancelActionTitle: 'Cancel',
-            ),
-          );
+          _showDownloadWallpaperConfirmationAlertDialog(viewModel);
         }
       },
       child: isLoading
           ? SizedBox(width: 24, height: 24, child: _loadingView())
           : const Icon(Icons.arrow_circle_down_rounded),
+    );
+  }
+
+  void _showDownloadWallpaperConfirmationAlertDialog(
+    FeedDetailViewModel viewModel,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) => ConfirmationAlertDialog(
+        title: "Download wallpaper",
+        description:
+            "Are you sure you want to download ${viewModel.pageTitle()} image?",
+        onPrimaryAction: () {
+          viewModel.onDownloadWallpaper();
+        },
+        primaryActionTitle: 'Yes',
+        cancelActionTitle: 'Cancel',
+      ),
     );
   }
 
@@ -321,26 +327,32 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
         if (isLoading) {
           return;
         } else {
-          showDialog(
-            context: context,
-            builder: (alertDialogContext) => ConfirmationAlertDialog(
-              title: "Set as wallpaper",
-              description:
-                  "Are you sure you want to set ${viewModel.pageTitle()} image as wallpaper?",
-              onPrimaryAction: () {
-                Future.delayed(const Duration(milliseconds: 300), () {
-                  _showSetWallpaperAlertBottomSheetForAndroid(viewModel);
-                });
-              },
-              primaryActionTitle: 'Yes',
-              cancelActionTitle: 'Cancel',
-            ),
-          );
+          _showSetAsWallpaperConfirmationAlertDialog(viewModel);
         }
       },
       child: isLoading
           ? SizedBox(width: 24, height: 24, child: _loadingView())
           : const Icon(Icons.wallpaper),
+    );
+  }
+
+  void _showSetAsWallpaperConfirmationAlertDialog(
+    FeedDetailViewModel viewModel,
+  ) {
+    showDialog(
+      context: context,
+      builder: (alertDialogContext) => ConfirmationAlertDialog(
+        title: "Set as wallpaper",
+        description:
+            "Are you sure you want to set ${viewModel.pageTitle()} image as wallpaper?",
+        onPrimaryAction: () {
+          Future.delayed(const Duration(milliseconds: 300), () {
+            _showSetWallpaperAlertBottomSheetForAndroid(viewModel);
+          });
+        },
+        primaryActionTitle: 'Yes',
+        cancelActionTitle: 'Cancel',
+      ),
     );
   }
 }
