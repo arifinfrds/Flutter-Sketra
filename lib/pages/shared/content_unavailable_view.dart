@@ -19,7 +19,7 @@ class ContentUnavailableView extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         spacing: 16,
         children: [
-          Text(title),
+          Text(title, style: Theme.of(context).textTheme.titleLarge),
           Text(description),
           ElevatedButton(onPressed: onRetry, child: const Text("Reload")),
         ],

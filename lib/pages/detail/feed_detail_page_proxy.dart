@@ -35,7 +35,7 @@ class _FeedDetailPageProxyState extends State<FeedDetailPageProxy> {
   }
 
   Future<FeedDetailViewModel> _loadViewModel() async {
-    final jsonString = await rootBundle.loadString('assets/mock_feed.json');
+    final jsonString = await rootBundle.loadString('assets/feed-v1.json');
     final viewModel = FeedDetailViewModel(
       widget.wallpaperId,
       MockWallpaperService.name(jsonString),
@@ -84,10 +84,14 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
         actions: isLoading ? [] : [_popupMenuButton(viewModel)],
       ),
       body: _body(viewModel),
-      floatingActionButton: Platform.isAndroid
-          ? _setAsWallpaperFAB(viewModel)
-          : _downloadWallpaperFAB(viewModel),
+      floatingActionButton: _floatingActionButton(viewModel),
     );
+  }
+
+  Widget? _floatingActionButton(FeedDetailViewModel viewModel) {
+    return Platform.isAndroid
+        ? _setAsWallpaperFAB(viewModel)
+        : _downloadWallpaperFAB(viewModel);
   }
 
   Widget _popupMenuButton(FeedDetailViewModel viewModel) {
