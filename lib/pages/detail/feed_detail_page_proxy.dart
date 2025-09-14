@@ -244,7 +244,12 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
       case ViewState.initial || ViewState.loading:
         return _loadingView();
       case ViewState.loaded:
-        return AsyncImage(url: viewModel.wallpaper!.url);
+        return SingleChildScrollView(
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            child: AsyncImage(url: viewModel.wallpaper!.url),
+          ),
+        );
       case ViewState.error:
         return _errorView(viewModel);
       case ViewState.imageDownloadLoadingStarted ||
@@ -252,7 +257,12 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
           ViewState.imageDownloadedToDeviceError ||
           ViewState.settingImageAsWallpaperSuccessfully ||
           ViewState.settingImageAsWallpaperError:
-        return AsyncImage(url: viewModel.wallpaper!.url);
+        return SingleChildScrollView(
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            child: AsyncImage(url: viewModel.wallpaper!.url),
+          ),
+        );
     }
   }
 
