@@ -80,7 +80,6 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(viewModel.pageTitle()),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: isLoading ? [] : [_popupMenuButton(viewModel)],
       ),
       body: _body(viewModel),

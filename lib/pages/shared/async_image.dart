@@ -1,9 +1,22 @@
 import 'package:flutter/material.dart';
 
-class AsyncImage extends StatelessWidget {
+class AsyncImage extends StatefulWidget {
   final String url;
 
   const AsyncImage({super.key, required this.url});
+
+  @override
+  State<AsyncImage> createState() => _AsyncImageState();
+}
+
+class _AsyncImageState extends State<AsyncImage> {
+  Key _imageKey = UniqueKey(); // force rebuild on retry
+
+  void _retry() {
+    setState(() {
+      _imageKey = UniqueKey(); // triggers Image.network reload
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,8 +25,9 @@ class AsyncImage extends StatelessWidget {
       children: [
         Container(color: Colors.black12),
         Image.network(
-          url,
-          fit: BoxFit.cover, // 👈 crop center, maintain aspect ratio
+          widget.url,
+          key: _imageKey,
+          fit: BoxFit.cover,
           alignment: Alignment.center,
           loadingBuilder: (context, child, event) {
             if (event == null) {
@@ -27,6 +41,21 @@ class AsyncImage extends StatelessWidget {
                 ),
               );
             }
+          },
+          errorBuilder: (context, error, stackTrace) {
+            return Center(
+              child: IconButton(
+                iconSize: 40,
+                style: ButtonStyle(
+                  backgroundColor: WidgetStateProperty.all(
+                    Colors.black.withOpacity(0.3),
+                  ),
+                  shape: WidgetStateProperty.all(const CircleBorder()),
+                ),
+                icon: const Icon(Icons.refresh, color: Colors.white),
+                onPressed: _retry,
+              ),
+            );
           },
         ),
       ],
