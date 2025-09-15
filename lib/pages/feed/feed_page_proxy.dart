@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:sketra/pages/detail/feed_detail_page_proxy.dart';
 import 'package:sketra/pages/feed/feed_page_grid_cell.dart';
 
-import '../../models/mock_wallpaper_service.dart';
+import '../../models/json_wallpaper_service.dart';
 import '../shared/content_unavailable_view.dart';
 import 'feed_view_model.dart';
 import '../../models/wallpaper.dart';
@@ -23,7 +23,7 @@ class FeedPageProxy extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final service = MockWallpaperService.name(snapshot.data!);
+        final service = JsonWallpaperService.name(snapshot.data!);
         return ChangeNotifierProvider(
           create: (_) => FeedViewModel(service)..onLoad(),
           child: FeedPage(title: title),
@@ -53,7 +53,7 @@ class _FeedPageState extends State<FeedPage> {
 
   Future<void> _initViewModel() async {
     final jsonString = await rootBundle.loadString('assets/feed-v1.json');
-    final service = MockWallpaperService.name(jsonString);
+    final service = JsonWallpaperService.name(jsonString);
 
     viewModel = FeedViewModel(service);
     viewModel.addListener(_onViewModelChanged);

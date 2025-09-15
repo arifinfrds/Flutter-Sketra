@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:sketra/models/download_wallpaper_service.dart';
 import 'package:sketra/models/wallpaper.dart';
-import '../../models/mock_wallpaper_service.dart';
+import '../../models/json_wallpaper_service.dart';
 import '../../models/set_wallpaper_type.dart';
 
 enum FeedDetailViewModelViewState {
@@ -20,7 +20,7 @@ typedef ViewState = FeedDetailViewModelViewState;
 
 class FeedDetailViewModel extends ChangeNotifier {
   final String _wallpaperId;
-  final MockWallpaperService _wallpaperService;
+  final JsonWallpaperService _wallpaperService;
   final DownloadWallpaperService _downloadWallpaperService;
 
   Wallpaper? _wallpaper;

@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:sketra/models/download_wallpaper_service.dart';
-import 'package:sketra/models/mock_wallpaper_service.dart';
+import 'package:sketra/models/json_wallpaper_service.dart';
 import 'package:sketra/models/set_wallpaper_type.dart';
 import 'package:sketra/pages/detail/feed_detail_view_model.dart';
 
@@ -38,7 +38,7 @@ class _FeedDetailPageProxyState extends State<FeedDetailPageProxy> {
     final jsonString = await rootBundle.loadString('assets/feed-v1.json');
     final viewModel = FeedDetailViewModel(
       widget.wallpaperId,
-      MockWallpaperService.name(jsonString),
+      JsonWallpaperService.name(jsonString),
       DownloadWallpaperService(),
     );
     await viewModel.onLoad();
