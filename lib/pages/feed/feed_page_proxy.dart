@@ -33,74 +33,42 @@ class FeedPageProxy extends StatelessWidget {
   }
 }
 
-class FeedPage extends StatefulWidget {
+class FeedPage extends StatelessWidget {
   const FeedPage({super.key, required this.title});
 
   final String title;
 
   @override
-  State<FeedPage> createState() => _FeedPageState();
-}
-
-class _FeedPageState extends State<FeedPage> {
-  late final FeedViewModel viewModel;
-
-  @override
-  void initState() {
-    super.initState();
-    _initViewModel();
-  }
-
-  Future<void> _initViewModel() async {
-    final jsonString = await rootBundle.loadString('assets/feed-v1.json');
-    final service = JsonWallpaperService.name(jsonString);
-
-    viewModel = FeedViewModel(service);
-    viewModel.addListener(_onViewModelChanged);
-    await viewModel.onLoad();
-
-    setState(() {});
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    viewModel.removeListener(_onViewModelChanged);
-  }
-
-  void _onViewModelChanged() {
-    setState(() {});
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<FeedViewModel>();
+
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
-      body: _body(),
+      appBar: AppBar(title: Text(title)),
+      body: _body(viewModel),
     );
   }
 
-  Widget _body() {
+  Widget _body(FeedViewModel viewModel) {
     switch (viewModel.viewState) {
-      case FeedViewState.loading:
+      case FeedViewState.loading || FeedViewState.initial:
         return const Center(child: CircularProgressIndicator());
       case FeedViewState.error:
-        return _errorView();
+        return ContentUnavailableView.name(
+          title: "Failed to load wallpapers",
+          description: viewModel.errorMessage,
+          onRetry: () => viewModel.onLoad(),
+        );
       case FeedViewState.empty:
         return const Center(child: Text("No wallpapers available"));
       case FeedViewState.loaded || FeedViewState.pullToRefreshLoading:
         return RefreshIndicator(
           child: _gridView(viewModel.wallpapers),
-          onRefresh: () {
-            return viewModel.onPullToRefresh();
-          },
+          onRefresh: () => viewModel.onPullToRefresh(),
         );
-      default:
-        return const SizedBox();
     }
   }
 
-  Widget _errorView() {
+  Widget _errorView(FeedViewModel viewModel) {
     return ContentUnavailableView.name(
       title: "Failed to load wallpapers",
       description: viewModel.errorMessage,
@@ -119,12 +87,12 @@ class _FeedPageState extends State<FeedPage> {
       padding: const EdgeInsets.all(8),
       itemCount: wallpapers.length,
       itemBuilder: (context, index) {
-        return _feedPageGridCell(wallpapers[index]);
+        return _feedPageGridCell(context, wallpapers[index]);
       },
     );
   }
 
-  Widget _feedPageGridCell(Wallpaper wallpaper) {
+  Widget _feedPageGridCell(BuildContext context, Wallpaper wallpaper) {
     return FeedPageGridCell(
       wallpaper: wallpaper,
       onTap: () => _showFeedDetailPage(context, wallpaper),
