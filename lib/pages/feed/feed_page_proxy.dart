@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:sketra/pages/detail/feed_detail_page_proxy.dart';
 import 'package:sketra/pages/feed/feed_page_grid_cell.dart';
 
+import '../../models/mock_wallpaper_service.dart';
 import '../shared/content_unavailable_view.dart';
 import 'feed_view_model.dart';
 import '../../models/wallpaper.dart';
@@ -14,9 +16,19 @@ class FeedPageProxy extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => FeedViewModel()..onLoad(),
-      child: FeedPage(title: title),
+    return FutureBuilder<String>(
+      future: rootBundle.loadString('assets/feed-v1.json'),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final service = MockWallpaperService.name(snapshot.data!);
+        return ChangeNotifierProvider(
+          create: (_) => FeedViewModel(service)..onLoad(),
+          child: FeedPage(title: title),
+        );
+      },
     );
   }
 }
@@ -31,13 +43,23 @@ class FeedPage extends StatefulWidget {
 }
 
 class _FeedPageState extends State<FeedPage> {
-  final FeedViewModel viewModel = FeedViewModel();
+  late final FeedViewModel viewModel;
 
   @override
   void initState() {
     super.initState();
+    _initViewModel();
+  }
+
+  Future<void> _initViewModel() async {
+    final jsonString = await rootBundle.loadString('assets/feed-v1.json');
+    final service = MockWallpaperService.name(jsonString);
+
+    viewModel = FeedViewModel(service);
     viewModel.addListener(_onViewModelChanged);
-    viewModel.onLoad();
+    await viewModel.onLoad();
+
+    setState(() {});
   }
 
   @override
@@ -53,9 +75,7 @@ class _FeedPageState extends State<FeedPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
+      appBar: AppBar(title: Text(widget.title)),
       body: _body(),
     );
   }
