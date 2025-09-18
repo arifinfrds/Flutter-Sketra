@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:sketra/models/wallpaper.dart';
+import 'package:sketra/data/domain/wallpaper_entity.dart';
 
 import '../shared/async_image.dart';
 
 class FeedPageGridCell extends StatelessWidget {
-  final Wallpaper wallpaper;
+  final WallpaperEntity wallpaper;
   final VoidCallback onTap;
 
   const FeedPageGridCell({

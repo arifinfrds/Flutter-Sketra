@@ -1,11 +1,13 @@
-class Wallpaper {
+import '../domain/wallpaper_entity.dart';
+
+class RemoteWallpaper {
   final String id;
   final String title;
   final String url;
   final String category;
   final DateTime creationDate;
 
-  Wallpaper({
+  RemoteWallpaper({
     required this.id,
     required this.title,
     required this.url,
@@ -13,8 +15,8 @@ class Wallpaper {
     required this.creationDate,
   });
 
-  factory Wallpaper.fromJson(Map<String, dynamic> json) {
-    return Wallpaper(
+  factory RemoteWallpaper.fromJson(Map<String, dynamic> json) {
+    return RemoteWallpaper(
       id: json['id'] as String,
       title: json['title'] as String,
       url: json['url'] as String,
@@ -31,5 +33,17 @@ class Wallpaper {
       'category': category,
       'creationDate': creationDate.toIso8601String(),
     };
+  }
+}
+
+extension RemoteWallpaperExtension on RemoteWallpaper {
+  WallpaperEntity toEntity() {
+    return WallpaperEntity(
+      id: id,
+      title: title,
+      url: url,
+      category: category,
+      creationDate: creationDate,
+    );
   }
 }
