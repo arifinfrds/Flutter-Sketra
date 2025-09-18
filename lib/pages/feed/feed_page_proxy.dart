@@ -7,7 +7,7 @@ import 'package:sketra/pages/feed/feed_page_grid_cell.dart';
 import '../../models/json_wallpaper_service.dart';
 import '../shared/content_unavailable_view.dart';
 import 'feed_view_model.dart';
-import '../../models/wallpaper.dart';
+import '../../models/remote_wallpaper.dart';
 
 class FeedPageProxy extends StatelessWidget {
   const FeedPageProxy({super.key, required this.title});
@@ -76,7 +76,7 @@ class FeedPage extends StatelessWidget {
     );
   }
 
-  GridView _gridView(List<Wallpaper> wallpapers) {
+  GridView _gridView(List<RemoteWallpaper> wallpapers) {
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -92,7 +92,7 @@ class FeedPage extends StatelessWidget {
     );
   }
 
-  Widget _feedPageGridCell(BuildContext context, Wallpaper wallpaper) {
+  Widget _feedPageGridCell(BuildContext context, RemoteWallpaper wallpaper) {
     return FeedPageGridCell(
       wallpaper: wallpaper,
       onTap: () => _showFeedDetailPage(context, wallpaper),
@@ -101,7 +101,7 @@ class FeedPage extends StatelessWidget {
 
   Future<dynamic> _showFeedDetailPage(
     BuildContext context,
-    Wallpaper wallpaper,
+    RemoteWallpaper wallpaper,
   ) {
     return Navigator.of(context).push(
       MaterialPageRoute(

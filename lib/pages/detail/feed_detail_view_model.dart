@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:sketra/models/download_wallpaper_service.dart';
-import 'package:sketra/models/wallpaper.dart';
+import 'package:sketra/models/remote_wallpaper.dart';
 import '../../models/json_wallpaper_service.dart';
 import '../../models/set_wallpaper_type.dart';
 
@@ -23,10 +23,10 @@ class FeedDetailViewModel extends ChangeNotifier {
   final JsonWallpaperService _wallpaperService;
   final DownloadWallpaperService _downloadWallpaperService;
 
-  Wallpaper? _wallpaper;
+  RemoteWallpaper? _wallpaper;
   ViewState _viewState = ViewState.initial;
 
-  Wallpaper? get wallpaper => _wallpaper;
+  RemoteWallpaper? get wallpaper => _wallpaper;
 
   ViewState get viewState => _viewState;
 
