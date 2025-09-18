@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart';
-import 'package:sketra/models/download_wallpaper_service.dart';
-import 'package:sketra/models/remote_wallpaper.dart';
-import '../../models/json_wallpaper_service.dart';
-import '../../models/set_wallpaper_type.dart';
+import 'package:sketra/data/domain/wallpaper_entity.dart';
+
+import '../../data/networking/download_wallpaper_service.dart';
+import '../../data/networking/json_wallpaper_service.dart';
+import '../../data/networking/remote_wallpaper.dart';
+import '../../data/networking/set_wallpaper_type.dart';
 
 enum FeedDetailViewModelViewState {
   initial,
@@ -23,10 +25,10 @@ class FeedDetailViewModel extends ChangeNotifier {
   final JsonWallpaperService _wallpaperService;
   final DownloadWallpaperService _downloadWallpaperService;
 
-  RemoteWallpaper? _wallpaper;
+  WallpaperEntity? _wallpaper;
   ViewState _viewState = ViewState.initial;
 
-  RemoteWallpaper? get wallpaper => _wallpaper;
+  WallpaperEntity? get wallpaper => _wallpaper;
 
   ViewState get viewState => _viewState;
 

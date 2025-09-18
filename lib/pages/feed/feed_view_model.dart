@@ -1,8 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
-import 'package:sketra/models/json_wallpaper_service.dart';
-import 'package:sketra/models/remote_wallpaper.dart';
-import 'package:sketra/models/remote_wallpaper_response.dart';
+import 'package:sketra/data/domain/wallpaper_entity.dart';
+
+import '../../data/networking/json_wallpaper_service.dart';
 
 enum FeedViewState {
   initial,
@@ -18,7 +17,7 @@ enum FeedViewLoadType { normal, pullToRefresh }
 class FeedViewModel extends ChangeNotifier {
   final JsonWallpaperService _wallpaperService;
 
-  List<RemoteWallpaper> wallpapers = [];
+  List<WallpaperEntity> wallpapers = [];
   FeedViewState viewState = FeedViewState.initial;
   String errorMessage = "";
 
@@ -35,9 +34,8 @@ class FeedViewModel extends ChangeNotifier {
     notifyListeners();
     try {
       await Future.delayed(const Duration(seconds: 2));
-      RemoteWallpaperResponse response = await _wallpaperService.loadWallpapers();
+      wallpapers = await _wallpaperService.loadWallpapers();
 
-      wallpapers = response.wallpapers;
       viewState = wallpapers.isEmpty
           ? FeedViewState.empty
           : FeedViewState.loaded;

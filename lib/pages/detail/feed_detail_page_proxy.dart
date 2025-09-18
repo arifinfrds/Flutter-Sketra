@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-import 'package:sketra/models/download_wallpaper_service.dart';
-import 'package:sketra/models/json_wallpaper_service.dart';
-import 'package:sketra/models/set_wallpaper_type.dart';
 import 'package:sketra/pages/detail/feed_detail_view_model.dart';
 
+import '../../data/networking/download_wallpaper_service.dart';
+import '../../data/networking/json_wallpaper_service.dart';
+import '../../data/networking/set_wallpaper_type.dart';
 import '../shared/async_image.dart';
 import '../shared/content_unavailable_view.dart';
 import '../shared/confirmation_alert_dialog.dart';

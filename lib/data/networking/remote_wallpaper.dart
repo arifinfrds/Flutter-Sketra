@@ -1,3 +1,5 @@
+import '../domain/wallpaper_entity.dart';
+
 class RemoteWallpaper {
   final String id;
   final String title;
@@ -31,5 +33,17 @@ class RemoteWallpaper {
       'category': category,
       'creationDate': creationDate.toIso8601String(),
     };
+  }
+}
+
+extension RemoteWallpaperExtension on RemoteWallpaper {
+  WallpaperEntity toEntity() {
+    return WallpaperEntity(
+      id: id,
+      title: title,
+      url: url,
+      category: category,
+      creationDate: creationDate,
+    );
   }
 }

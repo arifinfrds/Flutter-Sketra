@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 import 'package:sketra/constants.dart';
-import 'package:sketra/models/set_wallpaper_type.dart';
+import 'package:sketra/data/networking/set_wallpaper_type.dart';
 import 'package:uuid/uuid.dart';
 import 'package:wallpaper_manager_flutter/wallpaper_manager_flutter.dart';
 

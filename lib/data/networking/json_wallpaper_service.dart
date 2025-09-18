@@ -1,4 +1,5 @@
-import 'package:sketra/models/remote_wallpaper.dart';
+import 'package:sketra/data/domain/wallpaper_entity.dart';
+import 'package:sketra/data/networking/remote_wallpaper.dart';
 
 import 'remote_wallpaper_response.dart';
 import 'dart:convert';
@@ -8,14 +9,15 @@ class JsonWallpaperService {
 
   JsonWallpaperService.name(this.jsonString);
 
-  Future<RemoteWallpaperResponse> loadWallpapers() async {
+  Future<List<WallpaperEntity>> loadWallpapers() async {
     final decoded = jsonDecode(jsonString) as Map<String, dynamic>;
-    return RemoteWallpaperResponse.fromJson(decoded);
+    return RemoteWallpaperResponse.fromJson(
+      decoded,
+    ).wallpapers.map((item) => item.toEntity()).toList();
   }
 
-  Future<RemoteWallpaper> loadWallpaper(String id) async {
-    RemoteWallpaperResponse response = await loadWallpapers();
-    List<RemoteWallpaper> wallpapers = response.wallpapers;
+  Future<WallpaperEntity> loadWallpaper(String id) async {
+    List<WallpaperEntity> wallpapers = await loadWallpapers();
     // Find the wallpaper by id
     final wallpaper = wallpapers.firstWhere(
       (wallpaper) => wallpaper.id == id,

@@ -1,4 +1,4 @@
-import 'remote_wallpaper.dart';
+import 'package:sketra/data/networking/remote_wallpaper.dart';
 
 class RemoteWallpaperResponse {
   final List<RemoteWallpaper> wallpapers;

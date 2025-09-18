@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:sketra/data/domain/wallpaper_entity.dart';
 import 'package:sketra/pages/detail/feed_detail_page_proxy.dart';
 import 'package:sketra/pages/feed/feed_page_grid_cell.dart';
 
-import '../../models/json_wallpaper_service.dart';
+import '../../data/networking/json_wallpaper_service.dart';
 import '../shared/content_unavailable_view.dart';
 import 'feed_view_model.dart';
-import '../../models/remote_wallpaper.dart';
 
 class FeedPageProxy extends StatelessWidget {
   const FeedPageProxy({super.key, required this.title});
@@ -53,11 +53,7 @@ class FeedPage extends StatelessWidget {
       case FeedViewState.loading || FeedViewState.initial:
         return const Center(child: CircularProgressIndicator());
       case FeedViewState.error:
-        return ContentUnavailableView.name(
-          title: "Failed to load wallpapers",
-          description: viewModel.errorMessage,
-          onRetry: () => viewModel.onLoad(),
-        );
+        return _errorView(viewModel);
       case FeedViewState.empty:
         return const Center(child: Text("No wallpapers available"));
       case FeedViewState.loaded || FeedViewState.pullToRefreshLoading:
@@ -76,7 +72,7 @@ class FeedPage extends StatelessWidget {
     );
   }
 
-  GridView _gridView(List<RemoteWallpaper> wallpapers) {
+  GridView _gridView(List<WallpaperEntity> wallpapers) {
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -92,7 +88,7 @@ class FeedPage extends StatelessWidget {
     );
   }
 
-  Widget _feedPageGridCell(BuildContext context, RemoteWallpaper wallpaper) {
+  Widget _feedPageGridCell(BuildContext context, WallpaperEntity wallpaper) {
     return FeedPageGridCell(
       wallpaper: wallpaper,
       onTap: () => _showFeedDetailPage(context, wallpaper),
@@ -101,7 +97,7 @@ class FeedPage extends StatelessWidget {
 
   Future<dynamic> _showFeedDetailPage(
     BuildContext context,
-    RemoteWallpaper wallpaper,
+    WallpaperEntity wallpaper,
   ) {
     return Navigator.of(context).push(
       MaterialPageRoute(
