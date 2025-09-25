@@ -44,4 +44,3 @@ class FeedPageGridCell extends StatelessWidget {
     );
   }
 }
-
