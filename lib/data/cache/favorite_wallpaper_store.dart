@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import '../domain/wallpaper_entity.dart';
 
 abstract class FavoriteWallpaperStore {
