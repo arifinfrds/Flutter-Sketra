@@ -116,3 +116,4 @@ class FeedDetailViewModel extends ChangeNotifier {
     return message;
   }
 }
+
