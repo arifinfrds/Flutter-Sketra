@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/adapters.dart';
 
+import 'data/cache/favorite_wallpaper_store.dart';
 import 'pages/feed/feed_page_proxy.dart';
 
-void main() {
+late HiveFavoriteWallpaperStore favoriteStore;
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+
+  favoriteStore = HiveFavoriteWallpaperStore();
+  await favoriteStore.init();
+
   runApp(const MyApp());
 }
 
