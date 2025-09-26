@@ -3,7 +3,6 @@ import 'package:sketra/data/domain/wallpaper_entity.dart';
 
 import '../../data/networking/download_wallpaper_service.dart';
 import '../../data/networking/json_wallpaper_service.dart';
-import '../../data/networking/remote_wallpaper.dart';
 import '../../data/networking/set_wallpaper_type.dart';
 
 enum FeedDetailViewModelViewState {
