@@ -67,7 +67,6 @@ class FeedViewModel extends ChangeNotifier {
     loadWallpapers(FeedViewLoadType.pullToRefresh);
   }
 
-  // --------- FAVORITE LOGIC ---------
   bool isFavorite(WallpaperEntity wallpaper) {
     return _favoriteIds.contains(wallpaper.id);
   }
