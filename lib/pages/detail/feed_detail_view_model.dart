@@ -144,29 +144,37 @@ class FeedDetailViewModel extends ChangeNotifier {
 
     _viewState = ViewState.favoriteActionLoading;
     notifyListeners();
-    bool isFavorite = await _checkIsFavoriteWallpaperUseCase.execute(
+    final isFavorite = await _checkIsFavoriteWallpaperUseCase.execute(
       wallpaper!,
     );
 
     if (isFavorite) {
-      try {
-        _unfavoriteWallpaperUseCase.execute(wallpaper!);
-        _isFavorite = false;
-        _viewState = ViewState.favoriteActionLoadingFinished;
-      } catch (e) {
-        _errorMessage = "Something went wrong, please try again later.";
-        _viewState = ViewState.favoriteUnfavoriteOperationError;
-      }
+      _removeWallpaperFromFavorite(wallpaper!);
     } else {
-      try {
-        await _favoriteWallpaperUseCase.execute(wallpaper!);
-        _isFavorite = true;
-        _viewState = ViewState.favoriteActionLoadingFinished;
-      } catch (e) {
-        _errorMessage = "Something went wrong, please try again later.";
-        _viewState = ViewState.favoriteUnfavoriteOperationError;
-      }
+      _setWallpaperAsFavorite(wallpaper!);
     }
     notifyListeners();
+  }
+
+  Future<void> _removeWallpaperFromFavorite(WallpaperEntity wallpaper) async {
+    try {
+      _unfavoriteWallpaperUseCase.execute(wallpaper);
+      _isFavorite = false;
+      _viewState = ViewState.favoriteActionLoadingFinished;
+    } catch (e) {
+      _errorMessage = "Something went wrong, please try again later.";
+      _viewState = ViewState.favoriteUnfavoriteOperationError;
+    }
+  }
+
+  Future<void> _setWallpaperAsFavorite(WallpaperEntity wallpaper) async {
+    try {
+      await _favoriteWallpaperUseCase.execute(wallpaper);
+      _isFavorite = true;
+      _viewState = ViewState.favoriteActionLoadingFinished;
+    } catch (e) {
+      _errorMessage = "Something went wrong, please try again later.";
+      _viewState = ViewState.favoriteUnfavoriteOperationError;
+    }
   }
 }
