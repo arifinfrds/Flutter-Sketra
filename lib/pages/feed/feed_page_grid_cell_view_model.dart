@@ -17,6 +17,10 @@ final class FeedPageGridCellViewModel extends ChangeNotifier {
   );
 
   Future<void> onLoad() async {
+    await _loadIsFavorite();
+  }
+
+  Future<void> _loadIsFavorite() async {
     final isFavorite = await _checkIsFavoriteWallpaperUseCase.execute(
       _wallpaper,
     );
