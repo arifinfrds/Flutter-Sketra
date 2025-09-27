@@ -161,3 +161,4 @@ class FeedDetailViewModel extends ChangeNotifier {
     notifyListeners();
   }
 }
+
