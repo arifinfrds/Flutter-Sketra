@@ -57,7 +57,7 @@ class _FeedDetailPageProxyState extends State<FeedDetailPageProxy> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<FeedDetailViewModel>(
-      future: _future, // ✅ cached future
+      future: _future,
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
