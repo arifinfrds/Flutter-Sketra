@@ -1,6 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:sketra/data/domain/check_is_favorite_wallpaper_use_case.dart';
 import 'package:sketra/data/domain/wallpaper_entity.dart';
 
+import '../../data/domain/favorite_wallpaper_use_case.dart';
 import '../../data/networking/download_wallpaper_service.dart';
 import '../../data/networking/json_wallpaper_service.dart';
 import '../../data/networking/set_wallpaper_type.dart';
@@ -15,6 +18,9 @@ enum FeedDetailViewModelViewState {
   imageDownloadedToDeviceError,
   settingImageAsWallpaperSuccessfully,
   settingImageAsWallpaperError,
+  favoriteUnfavoriteOperationError,
+  favoriteActionLoading,
+  favoriteActionLoadingFinished,
 }
 
 typedef ViewState = FeedDetailViewModelViewState;
@@ -23,6 +29,8 @@ class FeedDetailViewModel extends ChangeNotifier {
   final String _wallpaperId;
   final JsonWallpaperService _wallpaperService;
   final DownloadWallpaperService _downloadWallpaperService;
+  final CheckIsFavoriteWallpaperUseCase _checkIsFavoriteWallpaperUseCase;
+  final FavoriteWallpaperUseCase _favoriteWallpaperUseCase;
 
   WallpaperEntity? _wallpaper;
   ViewState _viewState = ViewState.initial;
@@ -35,10 +43,16 @@ class FeedDetailViewModel extends ChangeNotifier {
 
   String get errorMessage => _errorMessage;
 
+  bool _isFavorite = false;
+
+  bool get isFavorite => _isFavorite;
+
   FeedDetailViewModel(
     this._wallpaperId,
     this._wallpaperService,
     this._downloadWallpaperService,
+    this._checkIsFavoriteWallpaperUseCase,
+    this._favoriteWallpaperUseCase,
   );
 
   Future<void> onLoad() async {
@@ -48,6 +62,10 @@ class FeedDetailViewModel extends ChangeNotifier {
     try {
       _wallpaper = await _wallpaperService.loadWallpaper(_wallpaperId);
       _viewState = ViewState.loaded;
+      final isFavorite = await _checkIsFavoriteWallpaperUseCase.execute(
+        wallpaper!,
+      );
+      _isFavorite = isFavorite;
     } catch (exception) {
       _errorMessage = exception.toString();
       _viewState = ViewState.error;
@@ -114,5 +132,32 @@ class FeedDetailViewModel extends ChangeNotifier {
     }
 
     return message;
+  }
+
+  Future<void> toggleFavorite() async {
+    if (wallpaper == null) {
+      return;
+    }
+
+    _viewState = ViewState.favoriteActionLoading;
+    notifyListeners();
+    bool isFavorite = await _checkIsFavoriteWallpaperUseCase.execute(
+      wallpaper!,
+    );
+
+    if (isFavorite) {
+      // TODO: Flutter-26
+      // ...
+    } else {
+      try {
+        await _favoriteWallpaperUseCase.execute(wallpaper!);
+        _isFavorite = true;
+        _viewState = ViewState.favoriteActionLoadingFinished;
+      } catch (e) {
+        _errorMessage = "Something went wrong, please try again later.";
+        _viewState = ViewState.favoriteUnfavoriteOperationError;
+      }
+    }
+    notifyListeners();
   }
 }
