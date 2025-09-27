@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:sketra/data/cache/favorite_wallpaper_store.dart';
+import 'package:sketra/data/domain/check_is_favorite_wallpaper_use_case.dart';
+import 'package:sketra/data/domain/favorite_wallpaper_use_case.dart';
 import 'package:sketra/pages/detail/feed_detail_view_model.dart';
 
 import '../../data/networking/download_wallpaper_service.dart';
@@ -36,10 +39,14 @@ class _FeedDetailPageProxyState extends State<FeedDetailPageProxy> {
 
   Future<FeedDetailViewModel> _loadViewModel() async {
     final jsonString = await rootBundle.loadString('assets/feed-v1.json');
+    final favoriteWallpaperStore = HiveFavoriteWallpaperStore();
+    favoriteWallpaperStore.init();
     final viewModel = FeedDetailViewModel(
       widget.wallpaperId,
       JsonWallpaperService.name(jsonString),
       DownloadWallpaperService(),
+      DefaultCheckIsFavoriteWallpaperUseCase(favoriteWallpaperStore),
+      DefaultFavoriteWallpaperUseCase(favoriteWallpaperStore),
     );
     await viewModel.onLoad();
     return viewModel;
@@ -80,7 +87,12 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(viewModel.pageTitle()),
-        actions: isLoading ? [] : [_popupMenuButton(viewModel)],
+        actions: isLoading
+            ? []
+            : [
+                _favoriteFloatingActionButton(viewModel),
+                _popupMenuButton(viewModel),
+              ],
       ),
       body: _body(viewModel),
       floatingActionButton: _floatingActionButton(viewModel),
@@ -91,6 +103,24 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
     return Platform.isAndroid
         ? _setAsWallpaperFAB(viewModel)
         : _downloadWallpaperFAB(viewModel);
+  }
+
+  Widget _favoriteFloatingActionButton(FeedDetailViewModel viewModel) {
+    bool isLoading = viewModel.viewState == ViewState.favoriteActionLoading;
+    return TextButton(
+      onPressed: () {
+        if (isLoading) {
+          return;
+        } else {
+          viewModel.toggleFavorite();
+        }
+      },
+      child: isLoading
+          ? SizedBox(width: 16, height: 16, child: _loadingView())
+          : viewModel.isFavorite
+          ? const Icon(Icons.favorite)
+          : const Icon(Icons.favorite_border_outlined),
+    );
   }
 
   Widget _popupMenuButton(FeedDetailViewModel viewModel) {
@@ -256,7 +286,10 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
           ViewState.imageDownloadedToDevice ||
           ViewState.imageDownloadedToDeviceError ||
           ViewState.settingImageAsWallpaperSuccessfully ||
-          ViewState.settingImageAsWallpaperError:
+          ViewState.settingImageAsWallpaperError ||
+          ViewState.favoriteActionLoading ||
+          ViewState.favoriteActionLoadingFinished ||
+          ViewState.favoriteUnfavoriteOperationError:
         return SingleChildScrollView(
           child: SizedBox(
             height: MediaQuery.of(context).size.height,

@@ -1,9 +1,10 @@
 import 'package:hive/hive.dart';
 import 'package:sketra/data/cache/cached_wallpaper.dart';
-
 import '../domain/wallpaper_entity.dart';
 
 abstract class FavoriteWallpaperStore {
+  Future<void> init();
+
   Future<void> setWallpaperAsFavorite(WallpaperEntity wallpaper);
 
   Future<void> setWallpaperAsUnfavorite(WallpaperEntity wallpaper);
@@ -15,9 +16,9 @@ class HiveFavoriteWallpaperStore extends FavoriteWallpaperStore {
   final String _boxName = "favorite_wallpapers";
   late Box<CachedWallpaper> _box;
 
-  /// Call this once during app startup
+  @override
   Future<void> init() async {
-    if (!Hive.isAdapterRegistered(0)) {
+    if (!Hive.isAdapterRegistered(CachedWallpaperAdapter().typeId)) {
       Hive.registerAdapter(CachedWallpaperAdapter());
     }
     _box = await Hive.openBox<CachedWallpaper>(_boxName);
@@ -25,13 +26,12 @@ class HiveFavoriteWallpaperStore extends FavoriteWallpaperStore {
 
   @override
   Future<void> setWallpaperAsFavorite(WallpaperEntity wallpaper) async {
-    final cachedWallpaper = CachedWallpaper(id: wallpaper.id);
-    await _box.put(wallpaper.id, cachedWallpaper);
+    await _box.put(wallpaper.id, CachedWallpaper(id: wallpaper.id));
   }
 
   @override
   Future<void> setWallpaperAsUnfavorite(WallpaperEntity wallpaper) async {
-    _box.delete(wallpaper.id);
+    await _box.delete(wallpaper.id);
   }
 
   @override
