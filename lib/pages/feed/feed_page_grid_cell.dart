@@ -34,33 +34,32 @@ class FeedPageGridCell extends StatelessWidget {
                 children: [
                   Expanded(child: AsyncImage(url: wallpaper.url)),
                   const SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            wallpaper.title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(
-                              context,
-                            ).textTheme.bodyLarge,
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.favorite),
-                        ),
-                      ],
-                    ),
-                  ),
+                  _footerView(context),
                 ],
               ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _footerView(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              wallpaper.title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+          ),
+          IconButton(onPressed: () {}, icon: Icon(Icons.favorite)),
+        ],
       ),
     );
   }
