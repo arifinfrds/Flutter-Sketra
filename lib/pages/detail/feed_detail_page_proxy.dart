@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:sketra/data/cache/favorite_wallpaper_store.dart';
 import 'package:sketra/data/domain/check_is_favorite_wallpaper_use_case.dart';
 import 'package:sketra/data/domain/favorite_wallpaper_use_case.dart';
+import 'package:sketra/data/domain/unfavorite_wallpaper_use_case.dart';
 import 'package:sketra/pages/detail/feed_detail_view_model.dart';
 
 import '../../data/networking/download_wallpaper_service.dart';
@@ -47,6 +48,7 @@ class _FeedDetailPageProxyState extends State<FeedDetailPageProxy> {
       DownloadWallpaperService(),
       DefaultCheckIsFavoriteWallpaperUseCase(favoriteWallpaperStore),
       DefaultFavoriteWallpaperUseCase(favoriteWallpaperStore),
+      DefaultUnfavoriteWallpaperUseCase(favoriteWallpaperStore),
     );
     await viewModel.onLoad();
     return viewModel;

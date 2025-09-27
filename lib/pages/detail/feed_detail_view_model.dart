@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sketra/data/domain/check_is_favorite_wallpaper_use_case.dart';
+import 'package:sketra/data/domain/unfavorite_wallpaper_use_case.dart';
 import 'package:sketra/data/domain/wallpaper_entity.dart';
 
 import '../../data/domain/favorite_wallpaper_use_case.dart';
@@ -31,6 +32,7 @@ class FeedDetailViewModel extends ChangeNotifier {
   final DownloadWallpaperService _downloadWallpaperService;
   final CheckIsFavoriteWallpaperUseCase _checkIsFavoriteWallpaperUseCase;
   final FavoriteWallpaperUseCase _favoriteWallpaperUseCase;
+  final UnFavoriteWallpaperUseCase _unfavoriteWallpaperUseCase;
 
   WallpaperEntity? _wallpaper;
   ViewState _viewState = ViewState.initial;
@@ -53,6 +55,7 @@ class FeedDetailViewModel extends ChangeNotifier {
     this._downloadWallpaperService,
     this._checkIsFavoriteWallpaperUseCase,
     this._favoriteWallpaperUseCase,
+    this._unfavoriteWallpaperUseCase,
   );
 
   Future<void> onLoad() async {
@@ -146,8 +149,14 @@ class FeedDetailViewModel extends ChangeNotifier {
     );
 
     if (isFavorite) {
-      // TODO: Flutter-26
-      // ...
+      try {
+        _unfavoriteWallpaperUseCase.execute(wallpaper!);
+        _isFavorite = false;
+        _viewState = ViewState.favoriteActionLoadingFinished;
+      } catch (e) {
+        _errorMessage = "Something went wrong, please try again later.";
+        _viewState = ViewState.favoriteUnfavoriteOperationError;
+      }
     } else {
       try {
         await _favoriteWallpaperUseCase.execute(wallpaper!);
@@ -161,4 +170,3 @@ class FeedDetailViewModel extends ChangeNotifier {
     notifyListeners();
   }
 }
-
