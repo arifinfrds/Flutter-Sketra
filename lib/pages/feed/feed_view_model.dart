@@ -31,10 +31,10 @@ class FeedViewModel extends ChangeNotifier {
   });
 
   Future<void> onLoad() async {
-    loadWallpapers(FeedViewLoadType.normal);
+    _loadWallpapers(FeedViewLoadType.normal);
   }
 
-  void loadWallpapers(FeedViewLoadType loadType) async {
+  void _loadWallpapers(FeedViewLoadType loadType) async {
     viewState = loadType == FeedViewLoadType.normal
         ? FeedViewState.loading
         : FeedViewState.pullToRefreshLoading;
@@ -48,14 +48,7 @@ class FeedViewModel extends ChangeNotifier {
           ? FeedViewState.empty
           : FeedViewState.loaded;
 
-      for (var wallpaper in wallpapers) {
-        final isFavorite = await checkIsFavoriteWallpaperUseCase.execute(
-          wallpaper,
-        );
-        if (isFavorite) {
-          _favoriteIds.add(wallpaper.id);
-        }
-      }
+      _setFavoriteIdsFor(wallpapers);
     } catch (exception) {
       errorMessage = exception.toString();
       viewState = FeedViewState.error;
@@ -63,8 +56,19 @@ class FeedViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> _setFavoriteIdsFor(List<WallpaperEntity> wallpapers) async {
+    for (var wallpaper in wallpapers) {
+      final isFavorite = await checkIsFavoriteWallpaperUseCase.execute(
+        wallpaper,
+      );
+      if (isFavorite) {
+        _favoriteIds.add(wallpaper.id);
+      }
+    }
+  }
+
   Future<void> onPullToRefresh() async {
-    loadWallpapers(FeedViewLoadType.pullToRefresh);
+    _loadWallpapers(FeedViewLoadType.pullToRefresh);
   }
 
   bool isFavorite(WallpaperEntity wallpaper) {
