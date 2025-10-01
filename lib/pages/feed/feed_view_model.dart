@@ -4,6 +4,7 @@ import 'package:sketra/data/domain/wallpaper_entity.dart';
 import 'package:sketra/pages/detail/feed_detail_page_proxy.dart';
 
 import '../../data/domain/favorite_wallpaper_use_case.dart';
+import '../../data/domain/unfavorite_wallpaper_use_case.dart';
 import '../../data/networking/json_wallpaper_service.dart';
 
 enum FeedViewState {
@@ -24,6 +25,7 @@ class FeedViewModel extends ChangeNotifier {
   final JsonWallpaperService wallpaperService;
   final CheckIsFavoriteWallpaperUseCase checkIsFavoriteWallpaperUseCase;
   final FavoriteWallpaperUseCase favoriteWallpaperUseCase;
+  final UnFavoriteWallpaperUseCase unfavoriteWallpaperUseCase;
 
   List<WallpaperEntity> wallpapers = [];
   FeedViewState viewState = FeedViewState.initial;
@@ -35,6 +37,7 @@ class FeedViewModel extends ChangeNotifier {
     required this.wallpaperService,
     required this.checkIsFavoriteWallpaperUseCase,
     required this.favoriteWallpaperUseCase,
+    required this.unfavoriteWallpaperUseCase,
   });
 
   Future<void> onLoad() async {
@@ -90,6 +93,8 @@ class FeedViewModel extends ChangeNotifier {
 
     if (isFavorite(wallpaper)) {
       _setWallpaperAsFavorite(wallpaper);
+    } else {
+      _removeWallpaperFromFavorite(wallpaper);
     }
     notifyListeners();
   }
@@ -97,6 +102,15 @@ class FeedViewModel extends ChangeNotifier {
   Future<void> _setWallpaperAsFavorite(WallpaperEntity wallpaper) async {
     try {
       await favoriteWallpaperUseCase.execute(wallpaper);
+    } catch (e) {
+      errorMessage = "Something went wrong, please try again later.";
+      viewState = ViewState.favoriteUnfavoriteOperationError;
+    }
+  }
+
+  Future<void> _removeWallpaperFromFavorite(WallpaperEntity wallpaper) async {
+    try {
+      unfavoriteWallpaperUseCase.execute(wallpaper);
     } catch (e) {
       errorMessage = "Something went wrong, please try again later.";
       viewState = ViewState.favoriteUnfavoriteOperationError;

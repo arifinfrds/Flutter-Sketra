@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:sketra/data/cache/favorite_wallpaper_store.dart';
 import 'package:sketra/data/domain/check_is_favorite_wallpaper_use_case.dart';
 import 'package:sketra/data/domain/favorite_wallpaper_use_case.dart';
+import 'package:sketra/data/domain/unfavorite_wallpaper_use_case.dart';
 import 'package:sketra/data/domain/wallpaper_entity.dart';
 import 'package:sketra/pages/detail/feed_detail_page_proxy.dart';
 import 'package:sketra/pages/feed/feed_page_grid_cell.dart';
@@ -32,11 +33,15 @@ class FeedPageProxy extends StatelessWidget {
         final checkIsFavoriteWallpaperUseCase =
             DefaultCheckIsFavoriteWallpaperUseCase(store);
         final favoriteWallpaperUseCase = DefaultFavoriteWallpaperUseCase(store);
+        final unfavoriteWallpaperUseCase = DefaultUnfavoriteWallpaperUseCase(
+          store,
+        );
         return ChangeNotifierProvider(
           create: (_) => FeedViewModel(
             wallpaperService: service,
             checkIsFavoriteWallpaperUseCase: checkIsFavoriteWallpaperUseCase,
             favoriteWallpaperUseCase: favoriteWallpaperUseCase,
+            unfavoriteWallpaperUseCase: unfavoriteWallpaperUseCase,
           )..onLoad(),
           child: FeedPage(title: title),
         );
