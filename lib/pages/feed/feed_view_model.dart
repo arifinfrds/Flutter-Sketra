@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:sketra/data/domain/check_is_favorite_wallpaper_use_case.dart';
 import 'package:sketra/data/domain/wallpaper_entity.dart';
+import 'package:sketra/pages/detail/feed_detail_page_proxy.dart';
 
+import '../../data/domain/favorite_wallpaper_use_case.dart';
 import '../../data/networking/json_wallpaper_service.dart';
 
 enum FeedViewState {
@@ -11,13 +13,17 @@ enum FeedViewState {
   loaded,
   error,
   pullToRefreshLoading,
+  favoriteUnfavoriteOperationError,
 }
 
 enum FeedViewLoadType { normal, pullToRefresh }
 
+typedef ViewState = FeedViewState;
+
 class FeedViewModel extends ChangeNotifier {
   final JsonWallpaperService wallpaperService;
   final CheckIsFavoriteWallpaperUseCase checkIsFavoriteWallpaperUseCase;
+  final FavoriteWallpaperUseCase favoriteWallpaperUseCase;
 
   List<WallpaperEntity> wallpapers = [];
   FeedViewState viewState = FeedViewState.initial;
@@ -28,6 +34,7 @@ class FeedViewModel extends ChangeNotifier {
   FeedViewModel({
     required this.wallpaperService,
     required this.checkIsFavoriteWallpaperUseCase,
+    required this.favoriteWallpaperUseCase,
   });
 
   Future<void> onLoad() async {
@@ -36,22 +43,20 @@ class FeedViewModel extends ChangeNotifier {
 
   void _loadWallpapers(FeedViewLoadType loadType) async {
     viewState = loadType == FeedViewLoadType.normal
-        ? FeedViewState.loading
-        : FeedViewState.pullToRefreshLoading;
+        ? ViewState.loading
+        : ViewState.pullToRefreshLoading;
     notifyListeners();
 
     try {
       await Future.delayed(const Duration(seconds: 2));
       wallpapers = await wallpaperService.loadWallpapers();
 
-      viewState = wallpapers.isEmpty
-          ? FeedViewState.empty
-          : FeedViewState.loaded;
+      viewState = wallpapers.isEmpty ? ViewState.empty : ViewState.loaded;
 
       _setFavoriteIdsFor(wallpapers);
     } catch (exception) {
       errorMessage = exception.toString();
-      viewState = FeedViewState.error;
+      viewState = ViewState.error;
     }
     notifyListeners();
   }
@@ -82,5 +87,19 @@ class FeedViewModel extends ChangeNotifier {
       _favoriteIds.add(wallpaper.id);
     }
     notifyListeners();
+
+    if (isFavorite(wallpaper)) {
+      _setWallpaperAsFavorite(wallpaper);
+    }
+    notifyListeners();
+  }
+
+  Future<void> _setWallpaperAsFavorite(WallpaperEntity wallpaper) async {
+    try {
+      await favoriteWallpaperUseCase.execute(wallpaper);
+    } catch (e) {
+      errorMessage = "Something went wrong, please try again later.";
+      viewState = ViewState.favoriteUnfavoriteOperationError;
+    }
   }
 }

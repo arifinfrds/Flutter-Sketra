@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:sketra/data/cache/favorite_wallpaper_store.dart';
 import 'package:sketra/data/domain/check_is_favorite_wallpaper_use_case.dart';
+import 'package:sketra/data/domain/favorite_wallpaper_use_case.dart';
 import 'package:sketra/data/domain/wallpaper_entity.dart';
 import 'package:sketra/pages/detail/feed_detail_page_proxy.dart';
 import 'package:sketra/pages/feed/feed_page_grid_cell.dart';
@@ -30,10 +31,12 @@ class FeedPageProxy extends StatelessWidget {
         store.init();
         final checkIsFavoriteWallpaperUseCase =
             DefaultCheckIsFavoriteWallpaperUseCase(store);
+        final favoriteWallpaperUseCase = DefaultFavoriteWallpaperUseCase(store);
         return ChangeNotifierProvider(
           create: (_) => FeedViewModel(
             wallpaperService: service,
             checkIsFavoriteWallpaperUseCase: checkIsFavoriteWallpaperUseCase,
+            favoriteWallpaperUseCase: favoriteWallpaperUseCase,
           )..onLoad(),
           child: FeedPage(title: title),
         );
@@ -53,16 +56,23 @@ class FeedPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: _body(viewModel),
+      body: _body(context, viewModel),
     );
   }
 
-  Widget _body(FeedViewModel viewModel) {
+  Widget _body(BuildContext context, FeedViewModel viewModel) {
     switch (viewModel.viewState) {
       case FeedViewState.loading || FeedViewState.initial:
         return const Center(child: CircularProgressIndicator());
       case FeedViewState.error:
         return _errorView(viewModel);
+      case FeedViewState.favoriteUnfavoriteOperationError:
+        final errorMessage = viewModel.errorMessage;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          final snackBar = SnackBar(content: Text(errorMessage));
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        });
+        return _gridView(viewModel.wallpapers);
       case FeedViewState.empty:
         return const Center(child: Text("No wallpapers available"));
       case FeedViewState.loaded || FeedViewState.pullToRefreshLoading:
