@@ -56,17 +56,23 @@ class FeedPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: _body(viewModel),
+      body: _body(context, viewModel),
     );
   }
 
-  Widget _body(FeedViewModel viewModel) {
+  Widget _body(BuildContext context, FeedViewModel viewModel) {
     switch (viewModel.viewState) {
       case FeedViewState.loading || FeedViewState.initial:
         return const Center(child: CircularProgressIndicator());
-      case FeedViewState.error ||
-          FeedViewState.favoriteUnfavoriteOperationError:
+      case FeedViewState.error:
         return _errorView(viewModel);
+      case FeedViewState.favoriteUnfavoriteOperationError:
+        final errorMessage = viewModel.errorMessage;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          final snackBar = SnackBar(content: Text(errorMessage));
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        });
+        return _gridView(viewModel.wallpapers);
       case FeedViewState.empty:
         return const Center(child: Text("No wallpapers available"));
       case FeedViewState.loaded || FeedViewState.pullToRefreshLoading:
