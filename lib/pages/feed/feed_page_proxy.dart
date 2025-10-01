@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:sketra/data/cache/favorite_wallpaper_store.dart';
+import 'package:sketra/data/domain/check_is_favorite_wallpaper_use_case.dart';
 import 'package:sketra/data/domain/wallpaper_entity.dart';
 import 'package:sketra/pages/detail/feed_detail_page_proxy.dart';
 import 'package:sketra/pages/feed/feed_page_grid_cell.dart';
@@ -24,8 +26,15 @@ class FeedPageProxy extends StatelessWidget {
         }
 
         final service = JsonWallpaperService.name(snapshot.data!);
+        final store = HiveFavoriteWallpaperStore();
+        store.init();
+        final checkIsFavoriteWallpaperUseCase =
+            DefaultCheckIsFavoriteWallpaperUseCase(store);
         return ChangeNotifierProvider(
-          create: (_) => FeedViewModel(service)..onLoad(),
+          create: (_) => FeedViewModel(
+            wallpaperService: service,
+            checkIsFavoriteWallpaperUseCase: checkIsFavoriteWallpaperUseCase,
+          )..onLoad(),
           child: FeedPage(title: title),
         );
       },
