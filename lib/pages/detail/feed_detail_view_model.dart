@@ -27,7 +27,7 @@ enum FeedDetailViewModelViewState {
 typedef ViewState = FeedDetailViewModelViewState;
 
 abstract class FeedDetailViewModelDelegate {
-  void didToggleFavorite();
+  void didToggleFavorite(WallpaperEntity wallpaper);
 }
 
 class FeedDetailViewModel extends ChangeNotifier {
@@ -37,6 +37,7 @@ class FeedDetailViewModel extends ChangeNotifier {
   final CheckIsFavoriteWallpaperUseCase _checkIsFavoriteWallpaperUseCase;
   final FavoriteWallpaperUseCase _favoriteWallpaperUseCase;
   final UnFavoriteWallpaperUseCase _unfavoriteWallpaperUseCase;
+  final FeedDetailViewModelDelegate _delegate;
 
   WallpaperEntity? _wallpaper;
   ViewState _viewState = ViewState.initial;
@@ -60,6 +61,7 @@ class FeedDetailViewModel extends ChangeNotifier {
     this._checkIsFavoriteWallpaperUseCase,
     this._favoriteWallpaperUseCase,
     this._unfavoriteWallpaperUseCase,
+    this._delegate,
   );
 
   Future<void> onLoad() async {
@@ -158,6 +160,8 @@ class FeedDetailViewModel extends ChangeNotifier {
       await _setWallpaperAsFavorite(wallpaper!);
     }
     notifyListeners();
+
+    _delegate.didToggleFavorite(wallpaper!);
   }
 
   Future<void> _removeWallpaperFromFavorite(WallpaperEntity wallpaper) async {

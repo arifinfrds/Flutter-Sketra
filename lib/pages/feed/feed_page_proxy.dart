@@ -13,6 +13,7 @@ import '../../data/networking/download_wallpaper_service.dart';
 import '../../data/networking/json_wallpaper_service.dart';
 import '../detail/feed_detail_view_model.dart';
 import '../shared/content_unavailable_view.dart';
+import 'feed_page_toggle_adapter.dart';
 import 'feed_view_model.dart';
 
 class FeedPageProxy extends StatelessWidget {
@@ -91,12 +92,12 @@ class FeedPage extends StatelessWidget {
           final snackBar = SnackBar(content: Text(errorMessage));
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         });
-        return _gridView(viewModel.wallpapers);
+        return _gridView(viewModel.wallpapers, viewModel);
       case FeedViewState.empty:
         return const Center(child: Text("No wallpapers available"));
       case FeedViewState.loaded || FeedViewState.pullToRefreshLoading:
         return RefreshIndicator(
-          child: _gridView(viewModel.wallpapers),
+          child: _gridView(viewModel.wallpapers, viewModel),
           onRefresh: () => viewModel.onPullToRefresh(),
         );
     }
@@ -110,7 +111,10 @@ class FeedPage extends StatelessWidget {
     );
   }
 
-  GridView _gridView(List<WallpaperEntity> wallpapers) {
+  GridView _gridView(
+    List<WallpaperEntity> wallpapers,
+    FeedViewModel viewModel,
+  ) {
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -121,22 +125,28 @@ class FeedPage extends StatelessWidget {
       padding: const EdgeInsets.all(8),
       itemCount: wallpapers.length,
       itemBuilder: (context, index) {
-        return _feedPageGridCell(context, wallpapers[index]);
+        return _feedPageGridCell(context, viewModel, wallpapers[index]);
       },
     );
   }
 
-  Widget _feedPageGridCell(BuildContext context, WallpaperEntity wallpaper) {
+  Widget _feedPageGridCell(
+    BuildContext context,
+    FeedViewModel viewModel,
+    WallpaperEntity wallpaper,
+  ) {
     return FeedPageGridCell(
       wallpaper: wallpaper,
-      onTap: () => _showFeedDetailPage(context, wallpaper),
+      onTap: () => _showFeedDetailPage(context, viewModel, wallpaper),
     );
   }
 
   Future<dynamic> _showFeedDetailPage(
     BuildContext context,
+    FeedViewModel viewModel,
     WallpaperEntity wallpaper,
   ) {
+    final vm = viewModel;
     return Navigator.push(
       context,
       MaterialPageRoute(
@@ -152,6 +162,7 @@ class FeedPage extends StatelessWidget {
             DefaultCheckIsFavoriteWallpaperUseCase(favoriteWallpaperStore),
             DefaultFavoriteWallpaperUseCase(favoriteWallpaperStore),
             DefaultUnfavoriteWallpaperUseCase(favoriteWallpaperStore),
+            FeedPageToggleAdapter(vm),
           );
 
           return FeedDetailPage(viewModel: viewModel);
