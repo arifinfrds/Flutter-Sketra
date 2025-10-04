@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:sketra/data/domain/check_is_favorite_wallpaper_use_case.dart';
 import 'package:sketra/data/domain/wallpaper_entity.dart';
-import 'package:sketra/pages/detail/feed_detail_page_proxy.dart';
 
 import '../../data/domain/favorite_wallpaper_use_case.dart';
 import '../../data/domain/unfavorite_wallpaper_use_case.dart';
