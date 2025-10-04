@@ -26,6 +26,10 @@ enum FeedDetailViewModelViewState {
 
 typedef ViewState = FeedDetailViewModelViewState;
 
+abstract class FeedDetailViewModelDelegate {
+  void didToggleFavorite();
+}
+
 class FeedDetailViewModel extends ChangeNotifier {
   final String _wallpaperId;
   final JsonWallpaperService _wallpaperService;
@@ -149,9 +153,9 @@ class FeedDetailViewModel extends ChangeNotifier {
     );
 
     if (isFavorite) {
-      _removeWallpaperFromFavorite(wallpaper!);
+      await _removeWallpaperFromFavorite(wallpaper!);
     } else {
-      _setWallpaperAsFavorite(wallpaper!);
+      await _setWallpaperAsFavorite(wallpaper!);
     }
     notifyListeners();
   }

@@ -4,14 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-import 'package:sketra/data/cache/favorite_wallpaper_store.dart';
-import 'package:sketra/data/domain/check_is_favorite_wallpaper_use_case.dart';
-import 'package:sketra/data/domain/favorite_wallpaper_use_case.dart';
-import 'package:sketra/data/domain/unfavorite_wallpaper_use_case.dart';
 import 'package:sketra/pages/detail/feed_detail_view_model.dart';
-
-import '../../data/networking/download_wallpaper_service.dart';
-import '../../data/networking/json_wallpaper_service.dart';
 import '../../data/networking/set_wallpaper_type.dart';
 import '../shared/async_image.dart';
 import '../shared/content_unavailable_view.dart';
@@ -19,66 +12,22 @@ import '../shared/confirmation_alert_dialog.dart';
 
 typedef ViewState = FeedDetailViewModelViewState;
 
-class FeedDetailPageProxy extends StatefulWidget {
-  final String wallpaperId;
+class FeedDetailPage extends StatelessWidget {
+  final FeedDetailViewModel viewModel;
 
-  const FeedDetailPageProxy(this.wallpaperId, {super.key});
-
-  @override
-  State<FeedDetailPageProxy> createState() => _FeedDetailPageProxyState();
-}
-
-class _FeedDetailPageProxyState extends State<FeedDetailPageProxy> {
-  late Future<FeedDetailViewModel> _future;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _future = _loadViewModel();
-  }
-
-  Future<FeedDetailViewModel> _loadViewModel() async {
-    final jsonString = await rootBundle.loadString('assets/feed-v1.json');
-    final favoriteWallpaperStore = HiveFavoriteWallpaperStore();
-    favoriteWallpaperStore.init();
-    final viewModel = FeedDetailViewModel(
-      widget.wallpaperId,
-      JsonWallpaperService.name(jsonString),
-      DownloadWallpaperService(),
-      DefaultCheckIsFavoriteWallpaperUseCase(favoriteWallpaperStore),
-      DefaultFavoriteWallpaperUseCase(favoriteWallpaperStore),
-      DefaultUnfavoriteWallpaperUseCase(favoriteWallpaperStore),
-    );
-    await viewModel.onLoad();
-    return viewModel;
-  }
+  const FeedDetailPage({super.key, required this.viewModel});
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<FeedDetailViewModel>(
-      future: _future,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        return ChangeNotifierProvider<FeedDetailViewModel>.value(
-          value: snapshot.data!,
-          child: const FeedDetailPage(),
-        );
-      },
+    viewModel.onLoad();
+    return ChangeNotifierProvider.value(
+      value: viewModel,
+      child: _FeedDetailPageContent(),
     );
   }
 }
 
-class FeedDetailPage extends StatefulWidget {
-  const FeedDetailPage({super.key});
-
-  @override
-  State<FeedDetailPage> createState() => _FeedDetailPageState();
-}
-
-class _FeedDetailPageState extends State<FeedDetailPage> {
+class _FeedDetailPageContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final viewModel = Provider.of<FeedDetailViewModel>(context);
@@ -93,18 +42,21 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
             ? []
             : [
                 _favoriteFloatingActionButton(viewModel),
-                _popupMenuButton(viewModel),
+                _popupMenuButton(context, viewModel),
               ],
       ),
-      body: _body(viewModel),
-      floatingActionButton: _floatingActionButton(viewModel),
+      body: _body(context, viewModel),
+      floatingActionButton: _floatingActionButton(context, viewModel),
     );
   }
 
-  Widget? _floatingActionButton(FeedDetailViewModel viewModel) {
+  Widget? _floatingActionButton(
+    BuildContext context,
+    FeedDetailViewModel viewModel,
+  ) {
     return Platform.isAndroid
-        ? _setAsWallpaperFAB(viewModel)
-        : _downloadWallpaperFAB(viewModel);
+        ? _setAsWallpaperFAB(context, viewModel)
+        : _downloadWallpaperFAB(context, viewModel);
   }
 
   Widget _favoriteFloatingActionButton(FeedDetailViewModel viewModel) {
@@ -125,7 +77,7 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
     );
   }
 
-  Widget _popupMenuButton(FeedDetailViewModel viewModel) {
+  Widget _popupMenuButton(BuildContext context, FeedDetailViewModel viewModel) {
     return PopupMenuButton<String>(
       onSelected: (value) async {
         switch (value) {
@@ -133,9 +85,9 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
             viewModel.onDownloadWallpaper();
           case 'set_wallpaper':
             if (Platform.isAndroid) {
-              _showSetAsWallpaperConfirmationAlertDialog(viewModel);
+              _showSetAsWallpaperConfirmationAlertDialog(context, viewModel);
             } else {
-              _showSetWallpaperAlertBottomSheetForIOS(viewModel);
+              _showSetWallpaperAlertBottomSheetForIOS(context, viewModel);
             }
         }
       },
@@ -156,6 +108,7 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
   }
 
   void _showSetWallpaperAlertBottomSheetForAndroid(
+    BuildContext context,
     FeedDetailViewModel viewModel,
   ) {
     showModalBottomSheet(
@@ -166,21 +119,33 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
             ListTile(
               title: Text('Set as Wallpaper on lock screen'),
               onTap: () {
-                _setAsWallpaper(viewModel, SetWallpaperType.lockScreen);
+                _setAsWallpaper(
+                  context,
+                  viewModel,
+                  SetWallpaperType.lockScreen,
+                );
                 Navigator.pop(context);
               },
             ),
             ListTile(
               title: Text('Set as Wallpaper on home screen'),
               onTap: () {
-                _setAsWallpaper(viewModel, SetWallpaperType.homeScreen);
+                _setAsWallpaper(
+                  context,
+                  viewModel,
+                  SetWallpaperType.homeScreen,
+                );
                 Navigator.pop(context);
               },
             ),
             ListTile(
               title: Text('Set as Wallpaper on home and lock screens'),
               onTap: () {
-                _setAsWallpaper(viewModel, SetWallpaperType.bothScreens);
+                _setAsWallpaper(
+                  context,
+                  viewModel,
+                  SetWallpaperType.bothScreens,
+                );
                 Navigator.pop(context);
               },
             ),
@@ -191,6 +156,7 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
   }
 
   void _setAsWallpaper(
+    BuildContext context,
     FeedDetailViewModel viewModel,
     SetWallpaperType setWallpaperType,
   ) {
@@ -205,7 +171,10 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
     }
   }
 
-  void _showSetWallpaperAlertBottomSheetForIOS(FeedDetailViewModel viewModel) {
+  void _showSetWallpaperAlertBottomSheetForIOS(
+    BuildContext context,
+    FeedDetailViewModel viewModel,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -269,7 +238,7 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
     );
   }
 
-  Widget _body(FeedDetailViewModel viewModel) {
+  Widget _body(BuildContext context, FeedDetailViewModel viewModel) {
     _bindToast(viewModel);
 
     switch (viewModel.viewState) {
@@ -328,7 +297,10 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
     );
   }
 
-  Widget _downloadWallpaperFAB(FeedDetailViewModel viewModel) {
+  Widget _downloadWallpaperFAB(
+    BuildContext context,
+    FeedDetailViewModel viewModel,
+  ) {
     bool isLoading =
         viewModel.viewState == ViewState.loading ||
         viewModel.viewState == ViewState.imageDownloadLoadingStarted;
@@ -338,7 +310,7 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
         if (isLoading) {
           return;
         } else {
-          _showDownloadWallpaperConfirmationAlertDialog(viewModel);
+          _showDownloadWallpaperConfirmationAlertDialog(context, viewModel);
         }
       },
       child: isLoading
@@ -348,6 +320,7 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
   }
 
   void _showDownloadWallpaperConfirmationAlertDialog(
+    BuildContext context,
     FeedDetailViewModel viewModel,
   ) {
     showDialog(
@@ -365,7 +338,10 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
     );
   }
 
-  Widget _setAsWallpaperFAB(FeedDetailViewModel viewModel) {
+  Widget _setAsWallpaperFAB(
+    BuildContext context,
+    FeedDetailViewModel viewModel,
+  ) {
     bool isLoading =
         viewModel.viewState == ViewState.loading ||
         viewModel.viewState == ViewState.imageDownloadLoadingStarted;
@@ -375,7 +351,7 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
         if (isLoading) {
           return;
         } else {
-          _showSetAsWallpaperConfirmationAlertDialog(viewModel);
+          _showSetAsWallpaperConfirmationAlertDialog(context, viewModel);
         }
       },
       child: isLoading
@@ -385,6 +361,7 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
   }
 
   void _showSetAsWallpaperConfirmationAlertDialog(
+    BuildContext context,
     FeedDetailViewModel viewModel,
   ) {
     showDialog(
@@ -395,7 +372,7 @@ class _FeedDetailPageState extends State<FeedDetailPage> {
             "Are you sure you want to set ${viewModel.pageTitle()} image as wallpaper?",
         onPrimaryAction: () {
           Future.delayed(const Duration(milliseconds: 300), () {
-            _showSetWallpaperAlertBottomSheetForAndroid(viewModel);
+            _showSetWallpaperAlertBottomSheetForAndroid(context, viewModel);
           });
         },
         primaryActionTitle: 'Yes',

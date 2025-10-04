@@ -6,10 +6,12 @@ import 'package:sketra/data/domain/check_is_favorite_wallpaper_use_case.dart';
 import 'package:sketra/data/domain/favorite_wallpaper_use_case.dart';
 import 'package:sketra/data/domain/unfavorite_wallpaper_use_case.dart';
 import 'package:sketra/data/domain/wallpaper_entity.dart';
-import 'package:sketra/pages/detail/feed_detail_page_proxy.dart';
+import 'package:sketra/pages/detail/feed_detail_page.dart';
 import 'package:sketra/pages/feed/feed_page_grid_cell.dart';
 
+import '../../data/networking/download_wallpaper_service.dart';
 import '../../data/networking/json_wallpaper_service.dart';
+import '../detail/feed_detail_view_model.dart';
 import '../shared/content_unavailable_view.dart';
 import 'feed_view_model.dart';
 
@@ -27,22 +29,34 @@ class FeedPageProxy extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final service = JsonWallpaperService.name(snapshot.data!);
-        final store = HiveFavoriteWallpaperStore();
-        store.init();
-        final checkIsFavoriteWallpaperUseCase =
-            DefaultCheckIsFavoriteWallpaperUseCase(store);
-        final favoriteWallpaperUseCase = DefaultFavoriteWallpaperUseCase(store);
-        final unfavoriteWallpaperUseCase = DefaultUnfavoriteWallpaperUseCase(
-          store,
-        );
-        return ChangeNotifierProvider(
-          create: (_) => FeedViewModel(
-            wallpaperService: service,
-            checkIsFavoriteWallpaperUseCase: checkIsFavoriteWallpaperUseCase,
-            favoriteWallpaperUseCase: favoriteWallpaperUseCase,
-            unfavoriteWallpaperUseCase: unfavoriteWallpaperUseCase,
-          )..onLoad(),
+        return MultiProvider(
+          providers: [
+            Provider<HiveFavoriteWallpaperStore>(
+              create: (_) {
+                final store = HiveFavoriteWallpaperStore();
+                store.init();
+                return store;
+              },
+            ),
+            Provider<JsonWallpaperService>(
+              create: (_) => JsonWallpaperService.name(snapshot.data!),
+            ),
+            ChangeNotifierProvider(
+              create: (context) => FeedViewModel(
+                wallpaperService: context.read<JsonWallpaperService>(),
+                checkIsFavoriteWallpaperUseCase:
+                    DefaultCheckIsFavoriteWallpaperUseCase(
+                      context.read<HiveFavoriteWallpaperStore>(),
+                    ),
+                favoriteWallpaperUseCase: DefaultFavoriteWallpaperUseCase(
+                  context.read<HiveFavoriteWallpaperStore>(),
+                ),
+                unfavoriteWallpaperUseCase: DefaultUnfavoriteWallpaperUseCase(
+                  context.read<HiveFavoriteWallpaperStore>(),
+                ),
+              )..onLoad(),
+            ),
+          ],
           child: FeedPage(title: title),
         );
       },
@@ -123,9 +137,25 @@ class FeedPage extends StatelessWidget {
     BuildContext context,
     WallpaperEntity wallpaper,
   ) {
-    return Navigator.of(context).push(
+    return Navigator.push(
+      context,
       MaterialPageRoute(
-        builder: (context) => FeedDetailPageProxy(wallpaper.id),
+        builder: (_) {
+          final favoriteWallpaperStore = context
+              .read<HiveFavoriteWallpaperStore>();
+          final wallpaperService = context.read<JsonWallpaperService>();
+
+          final viewModel = FeedDetailViewModel(
+            wallpaper.id,
+            wallpaperService,
+            DownloadWallpaperService(),
+            DefaultCheckIsFavoriteWallpaperUseCase(favoriteWallpaperStore),
+            DefaultFavoriteWallpaperUseCase(favoriteWallpaperStore),
+            DefaultUnfavoriteWallpaperUseCase(favoriteWallpaperStore),
+          );
+
+          return FeedDetailPage(viewModel: viewModel);
+        },
       ),
     );
   }
