@@ -90,7 +90,7 @@ class FeedViewModel extends ChangeNotifier {
     }
     notifyListeners();
 
-    if (isFavorite(wallpaper)) 
+    if (isFavorite(wallpaper)) {
       _setWallpaperAsFavorite(wallpaper);
     } else {
       _removeWallpaperFromFavorite(wallpaper);
