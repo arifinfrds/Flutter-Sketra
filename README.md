@@ -31,7 +31,7 @@ It supports both **Android** and **iOS** platforms. See more detail in ([Sketra'
 
 
 ## Proposed Architecture
-![Proposed Architecture](readme_assets/proposed-architecture.png)
+<img src="readme_assets/proposed-architecture.png" alt="Proposed Architecture" width="640">
 
 ## Installation
 Clone this repository and run with Flutter:
