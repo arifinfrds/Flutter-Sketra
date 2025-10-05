@@ -24,10 +24,10 @@ It supports both **Android** and **iOS** platforms. See more detail in ([Sketra'
 
 ## 📱 App Screenshots
 
-| **Feature**         | **Screenshot**         |
-|---------------------|------------------------|
-| Home Screen         | ![Home](readme_assets/sketra-home.png) |
-| Detail Screen       | ![Detail](readme_assets/sketra-detail.png) |
+| **Feature** | **Screenshot** |
+|--------------|----------------|
+| Home Screen  | <img src="readme_assets/sketra-home.png" width="320"> |
+| Detail Screen | <img src="readme_assets/sketra-detail.png" width="320"> |
 
 
 ## Proposed Architecture
