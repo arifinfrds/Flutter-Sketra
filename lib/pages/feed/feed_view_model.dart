@@ -51,7 +51,9 @@ class FeedViewModel extends ChangeNotifier {
 
     try {
       await Future.delayed(const Duration(seconds: 2));
-      wallpapers = await wallpaperService.loadWallpapers();
+      var receivedWallpapers = await wallpaperService.loadWallpapers();
+      receivedWallpapers.shuffle();
+      this.wallpapers = receivedWallpapers;
 
       viewState = wallpapers.isEmpty ? ViewState.empty : ViewState.loaded;
 
