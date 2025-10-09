@@ -59,7 +59,7 @@ class FeedPageGridCell extends StatelessWidget {
             ),
           ),
           IconButton(
-            onPressed: () => onToggleFavorite,
+            onPressed: () => onToggleFavorite(),
             icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
           ),
         ],
