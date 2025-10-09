@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../data/domain/wallpaper_entity.dart';
 import '../shared/async_image.dart';
-import 'feed_view_model.dart';
 
 class FeedPageGridCell extends StatelessWidget {
   final WallpaperEntity wallpaper;
+  final bool isFavorite;
   final VoidCallback onTap;
+  final VoidCallback onToggleFavorite;
 
   const FeedPageGridCell({
     super.key,
     required this.wallpaper,
+    required this.isFavorite,
     required this.onTap,
+    required this.onToggleFavorite,
   });
 
   @override
   Widget build(BuildContext context) {
-    final vm = context.watch<FeedViewModel>();
-
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: Material(
@@ -35,7 +35,7 @@ class FeedPageGridCell extends StatelessWidget {
               children: [
                 Expanded(child: AsyncImage(url: wallpaper.url)),
                 const SizedBox(height: 8),
-                _footerView(context, vm),
+                _footerView(context),
               ],
             ),
           ),
@@ -44,7 +44,7 @@ class FeedPageGridCell extends StatelessWidget {
     );
   }
 
-  Widget _footerView(BuildContext context, FeedViewModel viewModel) {
+  Widget _footerView(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
       child: Row(
@@ -59,12 +59,8 @@ class FeedPageGridCell extends StatelessWidget {
             ),
           ),
           IconButton(
-            onPressed: () => viewModel.toggleFavorite(wallpaper),
-            icon: Icon(
-              viewModel.isFavorite(wallpaper)
-                  ? Icons.favorite
-                  : Icons.favorite_border,
-            ),
+            onPressed: () => onToggleFavorite(),
+            icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
           ),
         ],
       ),
