@@ -25,13 +25,16 @@ final class FavoritesViewModel extends ChangeNotifier {
 
   Future<void> onLoad() async {
     _viewState = ViewState.loading;
+    notifyListeners();
 
     try {
       _wallpapers = await loadFavoriteWallpapersUseCase.execute();
       _viewState = _wallpapers.isEmpty ? ViewState.empty : ViewState.loaded;
     } catch (e) {
+      _errorMessage = e.toString();
       _viewState = ViewState.error;
     }
+    notifyListeners();
   }
 
   Future<void> onReload() async {
