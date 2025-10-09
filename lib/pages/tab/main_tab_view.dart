@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
+import 'package:sketra/pages/favorites/favorites_page.dart';
 import '../feed/feed_page_proxy.dart';
+import '../favorites/favorites_view_model.dart';
 
 class MainTabView extends StatefulWidget {
   const MainTabView({super.key});
@@ -11,11 +13,19 @@ class MainTabView extends StatefulWidget {
 
 class _MainTabViewState extends State<MainTabView> {
   int _selectedIndex = 0;
+  late final List<Widget> _pages;
 
-  final _pages = const [
-    FeedPageProxy(title: 'Sketra'),
-    Center(child: Text('Favorites View')),
-  ];
+  @override
+  void initState() {
+    super.initState();
+
+    final favoritesViewModel = context.read<FavoritesViewModel>();
+
+    _pages = [
+      const FeedPageProxy(title: 'Sketra'),
+      FavoritesPage(viewModel: favoritesViewModel),
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {

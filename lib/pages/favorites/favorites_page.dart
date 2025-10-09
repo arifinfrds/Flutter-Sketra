@@ -1,98 +1,76 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:sketra/data/cache/favorite_wallpaper_store.dart';
-import 'package:sketra/data/domain/check_is_favorite_wallpaper_use_case.dart';
-import 'package:sketra/data/domain/favorite_wallpaper_use_case.dart';
-import 'package:sketra/data/domain/unfavorite_wallpaper_use_case.dart';
-import 'package:sketra/data/domain/wallpaper_entity.dart';
-import 'package:sketra/pages/detail/feed_detail_page.dart';
-import 'package:sketra/pages/feed/feed_page_grid_cell.dart';
+import 'package:sketra/pages/favorites/favorites_view_model.dart';
 
+import '../../data/cache/favorite_wallpaper_store.dart';
+import '../../data/domain/check_is_favorite_wallpaper_use_case.dart';
+import '../../data/domain/favorite_wallpaper_use_case.dart';
+import '../../data/domain/unfavorite_wallpaper_use_case.dart';
+import '../../data/domain/wallpaper_entity.dart';
 import '../../data/networking/download_wallpaper_service.dart';
 import '../../data/networking/json_wallpaper_service.dart';
+import '../detail/feed_detail_page.dart';
 import '../detail/feed_detail_view_model.dart';
+import '../feed/feed_page_grid_cell.dart';
 import '../shared/content_unavailable_view.dart';
-import 'feed_page_toggle_adapter.dart';
-import 'feed_view_model.dart';
+import 'favorites_page_toggle_adapter.dart';
 
-class FeedPageProxy extends StatelessWidget {
-  const FeedPageProxy({super.key, required this.title});
+typedef ViewState = FavoritesViewModelViewState;
 
-  final String title;
+class FavoritesPage extends StatelessWidget {
+  final FavoritesViewModel viewModel;
+
+  const FavoritesPage({super.key, required this.viewModel});
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<String>(
-      future: rootBundle.loadString('assets/feed-v1.json'),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
-        }
+    viewModel.onLoad();
 
-        // now we can safely read the providers from context
-        final wallpaperService = context.read<JsonWallpaperService>();
-        final favoriteStore = context.read<HiveFavoriteWallpaperStore>();
-
-        // we only create the FeedViewModel here — no more MultiProvider nesting
-        return ChangeNotifierProvider(
-          create: (_) => FeedViewModel(
-            wallpaperService: wallpaperService,
-            checkIsFavoriteWallpaperUseCase:
-            DefaultCheckIsFavoriteWallpaperUseCase(favoriteStore),
-            favoriteWallpaperUseCase:
-            DefaultFavoriteWallpaperUseCase(favoriteStore),
-            unfavoriteWallpaperUseCase:
-            DefaultUnfavoriteWallpaperUseCase(favoriteStore),
-          )..onLoad(),
-          child: FeedPage(title: title),
-        );
-      },
+    return ChangeNotifierProvider.value(
+      value: viewModel,
+      child: _FavoritesPageContent(),
     );
   }
 }
 
-class FeedPage extends StatelessWidget {
-  const FeedPage({super.key, required this.title});
-
-  final String title;
+class _FavoritesPageContent extends StatelessWidget {
+  const _FavoritesPageContent({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<FeedViewModel>();
-
+    final viewModel = context.watch<FavoritesViewModel>();
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(title: const Text('Favorites')),
       body: _body(context, viewModel),
     );
   }
 
-  Widget _body(BuildContext context, FeedViewModel viewModel) {
+  Widget _body(BuildContext context, FavoritesViewModel viewModel) {
     switch (viewModel.viewState) {
-      case FeedViewState.loading || FeedViewState.initial:
+      case ViewState.loading || ViewState.initial:
         return const Center(child: CircularProgressIndicator());
-      case FeedViewState.error:
+      case ViewState.error:
         return _errorView(viewModel);
-      case FeedViewState.favoriteUnfavoriteOperationError:
+      case ViewState.favoriteUnfavoriteOperationError:
         final errorMessage = viewModel.errorMessage;
         WidgetsBinding.instance.addPostFrameCallback((_) {
           final snackBar = SnackBar(content: Text(errorMessage));
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         });
         return _gridView(viewModel.wallpapers, viewModel);
-      case FeedViewState.empty:
+      case ViewState.empty:
         return const Center(child: Text("No wallpapers available"));
-      case FeedViewState.loaded || FeedViewState.pullToRefreshLoading:
+      case ViewState.loaded || ViewState.pullToRefreshLoading:
         return RefreshIndicator(
           child: _gridView(viewModel.wallpapers, viewModel),
-          onRefresh: () => viewModel.onPullToRefresh(),
+          onRefresh: () => viewModel.onReload(),
         );
     }
   }
 
-  Widget _errorView(FeedViewModel viewModel) {
+  Widget _errorView(FavoritesViewModel viewModel) {
     return ContentUnavailableView.name(
-      title: "Failed to load wallpapers",
+      title: "Failed to load favorite wallpapers",
       description: viewModel.errorMessage,
       onRetry: () => viewModel.onLoad(),
     );
@@ -100,7 +78,7 @@ class FeedPage extends StatelessWidget {
 
   GridView _gridView(
     List<WallpaperEntity> wallpapers,
-    FeedViewModel viewModel,
+    FavoritesViewModel viewModel,
   ) {
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -119,27 +97,27 @@ class FeedPage extends StatelessWidget {
 
   Widget _feedPageGridCell(
     BuildContext context,
-    FeedViewModel viewModel,
+    FavoritesViewModel viewModel,
     WallpaperEntity wallpaper,
   ) {
     return FeedPageGridCell(
       wallpaper: wallpaper,
-      isFavorite: viewModel.isFavorite(wallpaper),
       onTap: () => _showFeedDetailPage(context, viewModel, wallpaper),
-      onToggleFavorite: () => viewModel.toggleFavorite(wallpaper),
+      isFavorite: true,
+      onToggleFavorite: () {},
     );
   }
 
   Future<dynamic> _showFeedDetailPage(
     BuildContext context,
-    FeedViewModel viewModel,
+    FavoritesViewModel viewModel,
     WallpaperEntity wallpaper,
   ) {
-    final vm = viewModel;
     return Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) {
+          // why error read from context? well basically it is not found in context right? so how to inject it to context then?
           final favoriteWallpaperStore = context
               .read<HiveFavoriteWallpaperStore>();
           final wallpaperService = context.read<JsonWallpaperService>();
@@ -151,7 +129,7 @@ class FeedPage extends StatelessWidget {
             DefaultCheckIsFavoriteWallpaperUseCase(favoriteWallpaperStore),
             DefaultFavoriteWallpaperUseCase(favoriteWallpaperStore),
             DefaultUnfavoriteWallpaperUseCase(favoriteWallpaperStore),
-            FeedPageToggleAdapter(vm),
+            FavoritesPageToggleAdapter(),
           );
 
           return FeedDetailPage(viewModel: viewModel);

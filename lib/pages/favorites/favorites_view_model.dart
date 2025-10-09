@@ -2,7 +2,15 @@ import 'package:flutter/widgets.dart';
 import 'package:sketra/data/domain/load_favorite_wallpapers_use_case.dart';
 import 'package:sketra/data/domain/wallpaper_entity.dart';
 
-enum FavoritesViewModelViewState { initial, loading, loaded, error, empty }
+enum FavoritesViewModelViewState {
+  initial,
+  loading,
+  loaded,
+  error,
+  empty,
+  pullToRefreshLoading,
+  favoriteUnfavoriteOperationError,
+}
 
 typedef ViewState = FavoritesViewModelViewState;
 
