@@ -20,4 +20,3 @@ class DefaultFavoriteWallpaperUseCase extends FavoriteWallpaperUseCase {
     }
   }
 }
-
