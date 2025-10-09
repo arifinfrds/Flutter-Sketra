@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:sketra/pages/tab/main_tab_view.dart';
 
 import 'data/cache/favorite_wallpaper_store.dart';
 import 'pages/feed/feed_page_proxy.dart';
@@ -30,7 +31,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       darkTheme: ThemeData.dark(useMaterial3: true),
-      home: const FeedPageProxy(title: 'Sketra'),
+      home: MainTabView(),
     );
   }
 }

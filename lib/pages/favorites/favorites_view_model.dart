@@ -41,4 +41,3 @@ final class FavoritesViewModel extends ChangeNotifier {
     await onLoad();
   }
 }
-
