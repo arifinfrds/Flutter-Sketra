@@ -117,7 +117,6 @@ class _FavoritesPageContent extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (_) {
-          // why error read from context? well basically it is not found in context right? so how to inject it to context then?
           final favoriteWallpaperStore = context
               .read<HiveFavoriteWallpaperStore>();
           final wallpaperService = context.read<JsonWallpaperService>();
