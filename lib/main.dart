@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
+import 'package:sketra/data/domain/unfavorite_wallpaper_use_case.dart';
 import 'package:sketra/pages/favorites/favorites_view_model.dart';
 import 'package:sketra/pages/tab/main_tab_view.dart';
 
@@ -27,9 +28,11 @@ Future<void> main() async {
     wallpaperService: wallpaperService,
     checkIsFavoriteWallpaperUseCase: checkIsFavoriteUseCase,
   );
+  final unfavoriteWallpaperUseCase = DefaultUnfavoriteWallpaperUseCase(store);
 
   final favoritesViewModel = FavoritesViewModel(
     loadFavoriteWallpapersUseCase: loadFavoriteWallpapersUseCase,
+    unfavoriteWallpaperUseCase: unfavoriteWallpaperUseCase,
   );
 
   runApp(
@@ -37,9 +40,15 @@ Future<void> main() async {
       providers: [
         Provider<JsonWallpaperService>.value(value: wallpaperService),
         Provider<HiveFavoriteWallpaperStore>.value(value: store),
-        Provider<CheckIsFavoriteWallpaperUseCase>.value(value: checkIsFavoriteUseCase),
-        Provider<LoadFavoriteWallpapersUseCase>.value(value: loadFavoriteWallpapersUseCase),
-        ChangeNotifierProvider<FavoritesViewModel>.value(value: favoritesViewModel),
+        Provider<CheckIsFavoriteWallpaperUseCase>.value(
+          value: checkIsFavoriteUseCase,
+        ),
+        Provider<LoadFavoriteWallpapersUseCase>.value(
+          value: loadFavoriteWallpapersUseCase,
+        ),
+        ChangeNotifierProvider<FavoritesViewModel>.value(
+          value: favoritesViewModel,
+        ),
       ],
       child: const MyApp(),
     ),

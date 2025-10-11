@@ -82,7 +82,7 @@ class FeedViewModel extends ChangeNotifier {
     return _favoriteIds.contains(wallpaper.id);
   }
 
-  void toggleFavorite(WallpaperEntity wallpaper) {
+  Future<void> toggleFavorite(WallpaperEntity wallpaper) async {
     if (isFavorite(wallpaper)) {
       _favoriteIds.remove(wallpaper.id);
     } else {
@@ -91,9 +91,9 @@ class FeedViewModel extends ChangeNotifier {
     notifyListeners();
 
     if (isFavorite(wallpaper)) {
-      _setWallpaperAsFavorite(wallpaper);
+      await _setWallpaperAsFavorite(wallpaper);
     } else {
-      _removeWallpaperFromFavorite(wallpaper);
+      await _removeWallpaperFromFavorite(wallpaper);
     }
     notifyListeners();
   }
