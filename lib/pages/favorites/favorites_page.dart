@@ -103,14 +103,14 @@ class _FavoritesPageContent extends StatelessWidget {
     return FeedPageGridCell(
       wallpaper: wallpaper,
       onTap: () => _showFeedDetailPage(context, viewModel, wallpaper),
-      isFavorite: true,
-      onToggleFavorite: () {},
+      isFavorite: viewModel.wallpapers.contains(wallpaper),
+      onToggleFavorite: () => viewModel.toggleFavorite(wallpaper),
     );
   }
 
   Future<dynamic> _showFeedDetailPage(
     BuildContext context,
-    FavoritesViewModel viewModel,
+    FavoritesViewModel _,
     WallpaperEntity wallpaper,
   ) {
     return Navigator.push(
@@ -120,18 +120,19 @@ class _FavoritesPageContent extends StatelessWidget {
           final favoriteWallpaperStore = context
               .read<HiveFavoriteWallpaperStore>();
           final wallpaperService = context.read<JsonWallpaperService>();
+          final favoritesViewModel = context.read<FavoritesViewModel>();
 
-          final viewModel = FeedDetailViewModel(
+          final detailViewModel = FeedDetailViewModel(
             wallpaper.id,
             wallpaperService,
             DownloadWallpaperService(),
             DefaultCheckIsFavoriteWallpaperUseCase(favoriteWallpaperStore),
             DefaultFavoriteWallpaperUseCase(favoriteWallpaperStore),
             DefaultUnfavoriteWallpaperUseCase(favoriteWallpaperStore),
-            FavoritesPageToggleAdapter(),
+            FavoritesPageToggleAdapter(favoritesViewModel),
           );
 
-          return FeedDetailPage(viewModel: viewModel);
+          return FeedDetailPage(viewModel: detailViewModel);
         },
       ),
     );

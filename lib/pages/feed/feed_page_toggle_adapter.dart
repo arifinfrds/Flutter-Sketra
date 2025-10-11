@@ -8,7 +8,7 @@ final class FeedPageToggleAdapter implements FeedDetailViewModelDelegate {
   FeedPageToggleAdapter(this._feedViewModel);
 
   @override
-  void didToggleFavorite(WallpaperEntity wallpaper) {
-    _feedViewModel.toggleFavorite(wallpaper);
+  Future<void> didToggleFavorite(WallpaperEntity wallpaper) async {
+    await _feedViewModel.toggleFavorite(wallpaper);
   }
 }
